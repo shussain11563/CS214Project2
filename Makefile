@@ -1,11 +1,8 @@
-compare: compare.o 
-	gcc -g -Wvla -Wall -fsanitize=address,undefined -o compare compare.o
+recurse: recurse.o strbuf.o
+	gcc -g -std=c99 -Wvla -Wall -fsanitize=address,undefined -o recurse recurse.o strbuf.o
 
-compare.o: compare.c compare.h 
-	gcc -c -g -Wvla -Wall -fsanitize=address,undefined compare.c
+recurse.o: recurse.c strbuf.h
+	gcc -c -g -std=c99 -Wvla -Wall -fsanitize=address,undefined recurse.c
 
-compare.h: 
-	gcc -c -g -Wvla -Wall -fsanitize=address,undefined compare.c
-
-clean:
-	rm -f *.o compare
+strbuf.o: strbuf.c strbuf.h
+	gcc -c -g -std=c99 -Wvla -Wall -fsanitize=address,undefined strbuf.c
