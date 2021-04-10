@@ -43,13 +43,64 @@ char* generateFilePath(char* directoryName, char* filePath)
     return ret;
 }
 
+int isSuffix(char* file, char* suffix)
+{
+    int condition = 0;
+    if(strlen(file)<strlen(suffix))
+    {
+        return condition;
+    }
+
+    int j = strlen(suffix);
+
+    int i =0;
+    while(j!=0)
+    {
+        printf("The character is %c vs %c\n",file[strlen(file)-1-i],suffix[strlen(suffix)-1-i]);
+        if((file[strlen(file)-1-i])!=(suffix[strlen(suffix)-1-i]))
+        {
+            return condition;
+        }
+        i++;
+        j--;
+    }
+
+    condition =1;
+    return condition;
+}   
+
+
+
+
+
+    /*
+    int i = 0;
+    int j = 0;
+
+    while(file[i]!='\0' || j==(strlen(suffix)-1)) //can remove j== and just return from inside while loop
+    {
+        if(file[i]==suffix[j])
+        {
+            j++;
+        }
+        i++;
+    }
+
+    if(j==(strlen(suffix)))
+    {
+        condition=1;
+
+    }
+
+    return condition;
+    
+}
+*/
+
+
 void printDir(char* file, char* ret)
 {
-
-
     DIR* dirp = opendir(file);
-
-
     struct dirent* entry;
 
         while(entry = readdir(dirp))
@@ -60,17 +111,8 @@ void printDir(char* file, char* ret)
             }
 
             char* comboString = generateFilePath(file, entry->d_name);
-            //puts(comboString); 
-            //free(comboString);
-
-            //printf("%s, %d\n", comboString, isDir(comboString));
-            //free(comboString);
             if(isDir(comboString)==1)
             {
-                //puts("poop");
-                
-                //puts(comboString);
-                //free(comboString);
                 printDir(comboString, comboString);
             }
             else
@@ -78,9 +120,7 @@ void printDir(char* file, char* ret)
                 puts(comboString); 
                 free(comboString);
             }
-            //free(comboString);
-            //if directory 
-            //puts(entry->d_name);
+
         }
         closedir(dirp);
 
@@ -95,32 +135,19 @@ void printDir(char* file, char* ret)
 
 int main(int argc, char **argv)
 {
-    if(isDir(argv[1])==1)
-    {
-        printDir(argv[1], NULL);
-    }
-    /*
-    if(isDir(argv[1])==1)
-    {
-        printf("This is a directory!\n");
-        DIR* dirp = opendir(argv[1]);
+    //if(isDir(argv[1])==1)
+    //{
+        //printDir(argv[1], NULL);
+    //}
 
-        struct dirent* entry;
-        //ignore .. and .   
-        
-        while(entry = readdir(dirp))
-        {
-            if(strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name)==0)
-            {
-                continue;
-            }
-            //if directory 
-            puts(entry->d_name);
-        }
+    //char* file = "hello.txt";
+    //char* suffix = ".txt";
+    if(isSuffix(argv[1],argv[2])==1)
+    {
+        puts("Same");
     }
     else
     {
-        printf("This is not a directory\n");
+        puts("Different");
     }
-    */
 }
