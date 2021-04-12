@@ -194,6 +194,10 @@ int main(int argc, char **argv)
 
     for(int i = 1; i < argc; i++)
     {
+        if()
+        {
+            //is file
+        }
         if(strncmp(argv[i], "-d", 2)==0)
         {
             printf("%d\n", threadCount(argv[i], "-d")); 
