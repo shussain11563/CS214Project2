@@ -9,7 +9,25 @@
 #include<ctype.h>
 
 
-//update 
+int isFile(char *filename)
+{
+    struct stat meta_data;
+    int status = stat(filename, &meta_data);
+    if(status==-1)
+    {
+        //perror("File Does Not Exist"); 
+        return -1;
+    }
+
+    if(S_ISREG(meta_data.st_mode))
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+
 int isDir(char *filename)
 {
     struct stat meta_data;
@@ -27,6 +45,7 @@ int isDir(char *filename)
 
     return 0;
 }
+
 
 char* generateFilePath(char* directoryName, char* filePath)
 {
@@ -190,15 +209,19 @@ int main(int argc, char **argv)
     int directoryThreads = 1;
     int fileThreads = 1;
     int analysisThreads = 1;
-    char* suffix = NULL;
+    char* suffix = ".txt";
 
     for(int i = 1; i < argc; i++)
     {
-        if()
+        if(isDir(argv[i])==1)
         {
-            //is file
+            //add to directory queue
         }
-        if(strncmp(argv[i], "-d", 2)==0)
+        else if(isFile(arg[i])==1)
+        {
+            //add to file queue 
+        }
+        else if(strncmp(argv[i], "-d", 2)==0)
         {
             printf("%d\n", threadCount(argv[i], "-d")); 
             directoryThreads = threadCount(argv[i], "-d");
@@ -219,6 +242,10 @@ int main(int argc, char **argv)
             suffix = stringParser(argv[i], "-s");
             puts(suffix);
             free(suffix); // --->Add to end
+        }
+        else
+        {
+            //illegal argument
         }
     }
     //if(isDir(argv[1])==1)

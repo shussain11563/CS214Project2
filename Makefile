@@ -1,3 +1,14 @@
+
+compare: compare.o strbuf.o
+	gcc -g -std=c99 -Wvla -Wall -fsanitize=address,undefined -o compare compare.o strbuf.o
+
+compare.o: compare.c strbuf.h
+	gcc -c -g -std=c99 -Wvla -Wall -fsanitize=address,undefined compare.c
+
+strbuf.o: strbuf.c strbuf.h
+	gcc -c -g -std=c99 -Wvla -Wall -fsanitize=address,undefined strbuf.c
+
+
 recurse: recurse.o strbuf.o
 	gcc -g -std=c99 -Wvla -Wall -fsanitize=address,undefined -o recurse recurse.o strbuf.o
 
@@ -6,3 +17,6 @@ recurse.o: recurse.c strbuf.h
 
 strbuf.o: strbuf.c strbuf.h
 	gcc -c -g -std=c99 -Wvla -Wall -fsanitize=address,undefined strbuf.c
+
+thread : pthreadTest.c
+	gcc -o -g -std=c99 -Wvla -Wall -fsanitize=address,undefined pthreadTest.c -lpthread
