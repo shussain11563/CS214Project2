@@ -11,7 +11,95 @@
 #endif
 
 //directory queue
+typedef struct strbuf_t_node
+{
+    strbuf_t node;
+    struct strbuf_t* next;
+} strbuf_t_node;
 
+typedef struct Queue
+{
+    strbuf_t_node* head;
+    strbuf_t_node* rear;
+    unsigned count;
+    
+} Queue;
+
+
+void init(Queue* queue)
+{
+    queue->head = NULL;
+    queue->rear = NULL;
+
+    unsigned count = 0;
+}
+
+void insert(Queue* queue, char* string)
+{
+    
+    strbuf_t word;
+    sb_init(&word, 5);
+    sb_concat(&word, string);
+    strbuf_t_node* node = malloc(sizeof(strbuf_t_node));
+    node->node = word;
+    node->next= NULL;
+
+    if(queue->rear==NULL)
+    {
+        queue->head = node;
+        queue->rear = node;
+        return;
+    }
+
+    queue->rear->next = node;
+    queue->rear = node; 
+    queue->count++;
+
+}
+
+char* dequeue(Queue* queue)
+{
+    if(queue->head==NULL)
+    {
+        return; //EMPTY
+    }
+
+    strbuf_t_node* retHead = queue->head;
+    strbuf_t temp;
+    retHead->node = temp;
+    //retHead->rear = NULL; //remove this?
+    queue->head = queue->head->next;
+    queue->count--;
+
+    if(queue->head==NULL)
+    {
+        queue->rear=NULL;
+    }
+
+    char* headWord = retHead->node.data;
+    free(retHead);
+    return headWord;
+}
+
+void destroy(Queue* queue)
+{
+    strbuf_t_node* prev = NULL;
+    strbuf_t_node* ptr = queue->head;
+    while(ptr!=NULL)
+    {
+        prev = ptr;
+        ptr = ptr->next;
+        free(prev->node.data);
+        free(prev);
+    }
+
+}
+
+
+
+
+
+/*
 typedef struct Queue
 {
     unsigned size;
@@ -62,7 +150,7 @@ void destroy(Queue* queue)
     }
     free(queue->array);
 }
-
+*/
 
 //put strbuf structure 
 
@@ -76,9 +164,11 @@ int main(int argc, char* argv[])
     {
         insert(&q, argv[i]);
     }
-    for(int i = 0; i < q.count; i++)
+    for(int i = 0; i < argc; i++)
     {
-        printf("%d----> %s\n", q.count, q.array[i].data);
+        char* temp = dequeue(&q);
+        printf("<----> %s\n", temp);
+        free(temp);
     }
     destroy(&q);
 }
