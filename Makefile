@@ -2,6 +2,7 @@
 
 compare: compare.o strbuf.o queue.o
 	gcc -g -std=c99 -Wvla -Wall -fsanitize=address,undefined -o compare compare.o strbuf.o queue.o
+	rm *.o
 
 compare.o: compare.c strbuf.h queue.h
 	gcc -c -g -std=c99 -Wvla -Wall -fsanitize=address,undefined compare.c

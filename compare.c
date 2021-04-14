@@ -7,6 +7,60 @@
 
 int main(int argc, char* argv[])
 {
+    int directoryThreads = 1;
+    int fileThreads = 1;
+    int analysisThreads = 1;
+    char* suffix = ".txt";
+    Queue directoryQueue;
+    Queue fileQueue;
+    
+
+    for(int i = 1; i < argc; i++)
+    {
+        if(isDir(argv[i])==1)
+        {
+            //add to directory queue
+        }
+        else if(isFile(arg[i])==1)
+        {
+            //add to file queue 
+        }
+        else if(strncmp(argv[i], "-d", 2)==0)
+        {
+            printf("%d\n", threadCount(argv[i], "-d")); 
+            directoryThreads = threadCount(argv[i], "-d");
+
+            //add error checsks for -1,  0
+        }
+        else if(strncmp(argv[i], "-f", 2)==0)
+        {
+            fileThreads = threadCount(argv[i], "-f");
+        }
+        else if(strncmp(argv[i], "-a", 2)==0)
+        {
+            analysisThreads = threadCount(argv[i], "-a");
+        }
+        else if(strncmp(argv[i], "-s", 2)==0)
+        {
+            //malloc
+            suffix = stringParser(argv[i], "-s");
+            puts(suffix);
+            free(suffix); // --->Add to end
+        }
+        else
+        {
+            //illegal argument
+        }
+    }
+
+
+
+
+
+
+
+    /*
+    ///////////////////////////
     Queue q;
     queue_init(&q);
 
@@ -26,4 +80,5 @@ int main(int argc, char* argv[])
         
     }
     queue_destroy(&q);
+    */
 }
