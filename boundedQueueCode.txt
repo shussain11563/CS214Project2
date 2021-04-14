@@ -1,0 +1,54 @@
+/*
+typedef struct Queue
+{
+    unsigned size;
+    strbuf_t* array;
+    unsigned count;
+    unsigned head;
+
+} Queue;
+
+
+void init(Queue* queue)
+{
+    queue->size = 3;  //test with realloc
+    queue->count = 0;
+    queue->head = 0;
+    queue->array = malloc(sizeof(strbuf_t) * queue->size);
+
+}
+
+
+
+void insert(Queue* queue, char* string)
+{
+    if(queue->count+1==queue->size)
+    {
+        size_t size = queue->size+1;
+        strbuf_t* temp = realloc(queue->array, sizeof(strbuf_t)*size);  
+        queue->array = temp;
+        queue->size = size;
+    }
+    strbuf_t word;
+    sb_init(&word, 5);
+    sb_concat(&word, string);
+    queue->array[queue->count] = word;
+    queue->count++;
+}
+
+void dequeue(Queue* queue, char* string)
+{
+
+}
+
+void destroy(Queue* queue)
+{
+    for(int i = 0; i < queue->count; i++)
+    {
+        free(queue->array[i].data);
+    }
+    free(queue->array);
+}
+*/
+
+//put strbuf structure 

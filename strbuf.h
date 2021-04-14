@@ -13,3 +13,4 @@ int sb_reset(strbuf_t *); // used for project 1
 
 /* additional one */
 int sb_concat(strbuf_t *, char*); // append cannot append strings
+
