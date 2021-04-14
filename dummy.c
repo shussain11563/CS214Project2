@@ -217,7 +217,7 @@ int main(int argc, char **argv)
         {
             //add to directory queue
         }
-        else if(isFile(arg[i])==1)
+        else if(isFile(argv[i])==1)
         {
             //add to file queue 
         }
