@@ -8,19 +8,7 @@
 #include "strbuf.h"
 #include<ctype.h>
 
-typedef struct Queue
-{
-    //string
-    //
 
-} Queue;
-
-void insert(Queue s, )
-{
-
-}
-
- 
 int isDir(char *filename)
 {
     struct stat meta_data;

@@ -4,13 +4,6 @@
 #include <string.h>
 #include "strbuf.h"
 #include<ctype.h>
-
-
-#ifndef DEBUG
-#define DEBUG 0
-#endif
-
-//directory queue
 typedef struct strbuf_t_node
 {
     strbuf_t node;
@@ -57,16 +50,19 @@ void insert(Queue* queue, char* string)
 
 }
 
+//must free return value
 char* dequeue(Queue* queue)
 {
+    //handles if empty
     if(queue->head==NULL)
     {
-        return; //EMPTY
+        return; //EMPTY //change this
     }
 
+    //grabs the first head
     strbuf_t_node* retHead = queue->head;
-    strbuf_t temp;
-    retHead->node = temp;
+
+    strbuf_t temp = retHead->node;
     //retHead->rear = NULL; //remove this?
     queue->head = queue->head->next;
     queue->count--;
@@ -76,6 +72,8 @@ char* dequeue(Queue* queue)
         queue->rear=NULL;
     }
 
+
+    
     char* headWord = retHead->node.data;
     free(retHead);
     return headWord;
@@ -162,13 +160,18 @@ int main(int argc, char* argv[])
 
     for(int i = 0; i < argc; i++)
     {
-        insert(&q, argv[i]);
+        //insert(&q, argv[i]);
     }
+
     for(int i = 0; i < argc; i++)
     {
-        char* temp = dequeue(&q);
-        printf("<----> %s\n", temp);
-        free(temp);
+        //printf("%s \n", test->node.data);
+        //test= test->next;
+
+        char* test = dequeue(&q); 
+        printf("%s \n", test);
+        free(test);
+        
     }
     destroy(&q);
 }
