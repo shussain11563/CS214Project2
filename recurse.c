@@ -90,23 +90,6 @@ int isSuffix(char* file, char* suffix)
 } 
 
 
-//remove 
-int isNumber(char* stringReg)
-{
-    int condition = 1;
-    int i = 0;
-    while(!(stringReg[i]=='\0'))
-    {
-        if(!(isdigit(stringReg[i])))
-        {
-            condition = 0;
-            return condition;
-        }
-        i++;
-    }
-    return condition;
-}
-
 int threadCount(char* argument, char* flag)
 {
     int threadCount = 1;
@@ -204,65 +187,23 @@ void printDir(char* file, char* ret)
 }
 
 
-int main(int argc, char **argv)
+/*
+
+//remove 
+int isNumber(char* stringReg)
 {
-    int directoryThreads = 1;
-    int fileThreads = 1;
-    int analysisThreads = 1;
-    char* suffix = ".txt";
-
-    for(int i = 1; i < argc; i++)
+    int condition = 1;
+    int i = 0;
+    while(!(stringReg[i]=='\0'))
     {
-        if(isDir(argv[i])==1)
+        if(!(isdigit(stringReg[i])))
         {
-            //add to directory queue
+            condition = 0;
+            return condition;
         }
-        else if(isFile(arg[i])==1)
-        {
-            //add to file queue 
-        }
-        else if(strncmp(argv[i], "-d", 2)==0)
-        {
-            printf("%d\n", threadCount(argv[i], "-d")); 
-            directoryThreads = threadCount(argv[i], "-d");
-
-            //add error checsks for -1,  0
-        }
-        else if(strncmp(argv[i], "-f", 2)==0)
-        {
-            fileThreads = threadCount(argv[i], "-f");
-        }
-        else if(strncmp(argv[i], "-a", 2)==0)
-        {
-            analysisThreads = threadCount(argv[i], "-a");
-        }
-        else if(strncmp(argv[i], "-s", 2)==0)
-        {
-            //malloc
-            suffix = stringParser(argv[i], "-s");
-            puts(suffix);
-            free(suffix); // --->Add to end
-        }
-        else
-        {
-            //illegal argument
-        }
+        i++;
     }
-    //if(isDir(argv[1])==1)
-    //{
-        //printDir(argv[1], NULL);
-    //}
-
-    //char* file = "hello.txt";
-    //char* suffix = ".txt";
-    /*
-    if(isSuffix(argv[1],argv[2])==1)
-    {
-        puts("Same");
-    }
-    else
-    {
-        puts("Different");
-    }
-    */
+    return condition;
 }
+
+*/

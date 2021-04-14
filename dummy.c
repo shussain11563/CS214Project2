@@ -148,7 +148,7 @@ char* stringParser(char* argument, char* flag)
 {
     if(strlen(argument)==strlen(flag))
     {
-        //return threadCount;  //defaultNumber ??
+        //return threadCount;  //defaultNumber ?? //return -1 and return error
     }
 
     //parse string   ----> use memcpy or memmove to condense code
@@ -248,6 +248,10 @@ int main(int argc, char **argv)
             //illegal argument
         }
     }
+
+    
+
+
     //if(isDir(argv[1])==1)
     //{
         //printDir(argv[1], NULL);
