@@ -13,17 +13,22 @@ int main(int argc, char* argv[])
     char* suffix = ".txt";
     Queue directoryQueue;
     Queue fileQueue;
-    
+
+    queue_init(&directoryQueue);
+    queue_init(&fileQueue);
+
 
     for(int i = 1; i < argc; i++)
     {
         if(isDir(argv[i])==1)
         {
             //add to directory queue
+            queue_insert(&directoryQueue, argv[i]);
         }
-        else if(isFile(arg[i])==1)
+        else if(isFile(argv[i])==1)
         {
-            //add to file queue 
+            //suffix stuff
+            queue_insert(&fileQueue, argv[i]);
         }
         else if(strncmp(argv[i], "-d", 2)==0)
         {
@@ -56,7 +61,9 @@ int main(int argc, char* argv[])
 
 
 
-
+    queue_destroy(&directoryQueue);
+    queue_destroy(&fileQueue);
+    //close queue function
 
 
     /*
