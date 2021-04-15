@@ -196,10 +196,20 @@ void printDir(char* file, char* ret)
 }
 
 
-void* directThreadFucntion(void *A)
+void* directThreadFunction(void *A)
 {
-    Queue 
-    queue_dequeue()
+    /*
+    //char* filename =  queue_dequeue(directoryQueue);
+    while(directoryQueue->head!=NULL)
+    {
+        //DIR* dirp = opendir(file);
+        //open function
+    }
+
+    free(filename);
+    */
+    ///////
+    //queue_dequeue()
     printf("Hello File\n");
     sleep(3);
     printf("Goodbye\n");
@@ -210,6 +220,51 @@ void* fileThreadFunction(void *A)
     printf("Hello Directory\n");
     sleep(3);
     printf("Goodbye\n");
+}
+
+void test(char* filename)
+{
+    //char* filename =  queue_dequeue(directoryQueue);
+   // while(directoryQueue->head!=NULL)
+    //{
+        DIR* dirp = opendir(filename);
+        struct dirent* entry;
+
+        while(entry = readdir(dirp))
+        {
+            if(strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name)==0)
+            {
+                continue;
+            }
+            //if(isSuffix(filename,suffix)==1 && isFile(filename)==1)
+            char* comboString = generateFilePath(filename, entry->d_name);
+            if(isFile(comboString)==1 && isSuffix(filename,suffix))
+            {
+                //queue_insert(fileQueue,filename);
+                puts("File:");
+                puts(comboString);
+                //free(comboString);
+                //comboStringcontinue;
+            }
+            else if(isDir(comboString)==1)
+            {
+                puts("Directory:");
+                puts(comboString);
+            }
+            //else
+            //{   
+                //puts(comboString); 
+                //free(comboString);
+            //}
+            free(comboString);
+            //printf("Faied to read Directory. The entry was %s  \n", entry->d_name);
+
+        }
+        closedir(dirp);
+        //open function
+    //}
+
+    //free(filename);
 }
 
 int main(int argc, char* argv[])
@@ -232,10 +287,10 @@ int main(int argc, char* argv[])
         if(isDir(argv[i])==1)
         {
             queue_insert(&directoryQueue, argv[i]);
+            test(argv[i]);
         }
         else if(isFile(argv[i])==1)
         {
-            //suffix stuff
             queue_insert(&fileQueue, argv[i]);
         }
         else if(strncmp(argv[i], "-d", 2)==0)
@@ -280,11 +335,11 @@ int main(int argc, char* argv[])
     int i = 0;
     for(; i <directoryThreads; i++)
     {
-        pthread_create(&tids[i], NULL, directThreadFucntion, NULL);
+        //pthread_create(&tids[i], NULL, directThreadFunction, NULL);
     }
     for(; i <threads; i++)
     {
-        pthread_create(&tids[i], NULL, fileThreadFunction,NULL);
+        //pthread_create(&tids[i], NULL, fileThreadFunction,NULL);
     }
 
     sleep(5);
@@ -294,8 +349,10 @@ int main(int argc, char* argv[])
     //}
     for (i = 0; i < threads; ++i) 
     {
-		pthread_join(tids[i], NULL);
+		// /pthread_join(tids[i], NULL);
 	}
+
+    
 
 
 
