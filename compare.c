@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include<dirent.h>
-
+#include <pthread.h>
 
 #include "strbuf.h"
 #include "queue.h"
@@ -32,6 +32,14 @@ int isFile(char *filename)
 
 int isDir(char *filename)
 {
+    if(strlen(filename)>=1)
+    {
+        if(filename[0]=='.')
+        {
+            return 0;
+        }
+        
+    }
     struct stat meta_data;
     int status = stat(filename, &meta_data);
     if(status==-1)
@@ -187,6 +195,23 @@ void printDir(char* file, char* ret)
 
 }
 
+
+void* directThreadFucntion(void *A)
+{
+    Queue 
+    queue_dequeue()
+    printf("Hello File\n");
+    sleep(3);
+    printf("Goodbye\n");
+}
+
+void* fileThreadFunction(void *A)
+{
+    printf("Hello Directory\n");
+    sleep(3);
+    printf("Goodbye\n");
+}
+
 int main(int argc, char* argv[])
 {
     int directoryThreads = 1;
@@ -206,7 +231,6 @@ int main(int argc, char* argv[])
     {
         if(isDir(argv[i])==1)
         {
-            //add to directory queue
             queue_insert(&directoryQueue, argv[i]);
         }
         else if(isFile(argv[i])==1)
@@ -242,8 +266,9 @@ int main(int argc, char* argv[])
         }
     }
     threads = directoryThreads+fileThreads+analysisThreads;
+    threads = directoryThreads+fileThreads;
 
-      pthread_t* tids = malloc(sizeof(pthread_t)*threads);
+    pthread_t* tids = malloc(sizeof(pthread_t) * threads);
 
     if(suffix==NULL)
     {
@@ -252,32 +277,32 @@ int main(int argc, char* argv[])
         strcpy(suffix, temp);
     }
 
-    for(int i = 0; i <directoryThreads; i++)
+    int i = 0;
+    for(; i <directoryThreads; i++)
     {
-
+        pthread_create(&tids[i], NULL, directThreadFucntion, NULL);
     }
-    for(; i <fileThreads; i++)
-    {
-        
-    }
-
     for(; i <threads; i++)
     {
-        
+        pthread_create(&tids[i], NULL, fileThreadFunction,NULL);
     }
 
-    for(int i=0; i <threads; i++)
+    sleep(5);
+    //for(; i <threads; i++)
+    //{
+        //pthread_create(&tids[i])
+    //}
+    for (i = 0; i < threads; ++i) 
     {
-        
-    }
-
+		pthread_join(tids[i], NULL);
+	}
 
 
 
 
 
     puts(suffix);
-
+    free(tids);
 
     free(suffix);
     queue_destroy(&directoryQueue);
