@@ -24,5 +24,5 @@ recurse.o: recurse.c strbuf.h
 strbuf.o: strbuf.c strbuf.h
 	gcc -c -g -std=c99 -Wvla -Wall -fsanitize=address,undefined strbuf.c
 
-thread : pthreadTest.c
-	gcc -o -g -std=c99 -Wvla -Wall -fsanitize=address,undefined pthreadTest.c -lpthread
+thread : menny.c
+	gcc -o thread  -g -lpthread  -std=c99 -Wvla -Wall -fsanitize=address,undefined menny.c

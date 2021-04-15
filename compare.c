@@ -192,6 +192,7 @@ int main(int argc, char* argv[])
     int directoryThreads = 1;
     int fileThreads = 1;
     int analysisThreads = 1;
+    int threads;
     //char* suffix = ".txt";
     char* suffix = NULL;
     Queue directoryQueue;
@@ -240,6 +241,9 @@ int main(int argc, char* argv[])
             //illegal argument
         }
     }
+    threads = directoryThreads+fileThreads+analysisThreads;
+
+      pthread_t* tids = malloc(sizeof(pthread_t)*threads);
 
     if(suffix==NULL)
     {
@@ -248,12 +252,38 @@ int main(int argc, char* argv[])
         strcpy(suffix, temp);
     }
 
+    for(int i = 0; i <directoryThreads; i++)
+    {
+
+    }
+    for(; i <fileThreads; i++)
+    {
+        
+    }
+
+    for(; i <threads; i++)
+    {
+        
+    }
+
+    for(int i=0; i <threads; i++)
+    {
+        
+    }
+
+
+
+
+
+
     puts(suffix);
 
 
     free(suffix);
     queue_destroy(&directoryQueue);
     queue_destroy(&fileQueue);
+
+
     //close queue function
 
 

@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include<dirent.h>
+#include<ctype.h>
 #include "strbuf.h"
 #include<ctype.h>
 

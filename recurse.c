@@ -27,7 +27,6 @@ int isFile(char *filename)
     return 0;
 }
 
-
 int isDir(char *filename)
 {
     struct stat meta_data;
@@ -45,7 +44,6 @@ int isDir(char *filename)
 
     return 0;
 }
-
 
 char* generateFilePath(char* directoryName, char* filePath)
 {
