@@ -85,7 +85,6 @@ int isSuffix(char* file, char* suffix)
     int i =0;
     while(j!=0)
     {
-        printf("The character is %c vs %c\n",file[strlen(file)-1-i],suffix[strlen(suffix)-1-i]);
         if((file[strlen(file)-1-i])!=(suffix[strlen(suffix)-1-i]))
         {
             return condition;
@@ -222,11 +221,11 @@ void* fileThreadFunction(void *A)
     printf("Goodbye\n");
 }
 
-void test(char* filename)
+void test(Queue* directoryQueue, Queue* fileQueue, char* suffix)
 {
-    //char* filename =  queue_dequeue(directoryQueue);
-   // while(directoryQueue->head!=NULL)
-    //{
+    while(directoryQueue->head!=NULL)
+    {
+        char* filename =  queue_dequeue(directoryQueue);
         DIR* dirp = opendir(filename);
         struct dirent* entry;
 
@@ -238,18 +237,20 @@ void test(char* filename)
             }
             //if(isSuffix(filename,suffix)==1 && isFile(filename)==1)
             char* comboString = generateFilePath(filename, entry->d_name);
-            if(isFile(comboString)==1 && isSuffix(filename,suffix))
+            char* temp[strlen(comboString)+1];
+            strcpy(temp, comboString);
+
+            if(isFile(comboString)==1 && isSuffix(comboString,suffix))
             {
-                //queue_insert(fileQueue,filename);
                 puts("File:");
                 puts(comboString);
-                //free(comboString);
-                //comboStringcontinue;
+                queue_insert(fileQueue,temp);
             }
             else if(isDir(comboString)==1)
-            {
+            {   
                 puts("Directory:");
                 puts(comboString);
+                queue_insert(directoryQueue,temp);
             }
             //else
             //{   
@@ -261,10 +262,10 @@ void test(char* filename)
 
         }
         closedir(dirp);
+        free(filename);
         //open function
-    //}
+    }
 
-    //free(filename);
 }
 
 int main(int argc, char* argv[])
@@ -287,7 +288,7 @@ int main(int argc, char* argv[])
         if(isDir(argv[i])==1)
         {
             queue_insert(&directoryQueue, argv[i]);
-            test(argv[i]);
+            test(&directoryQueue, &fileQueue, ".txt");
         }
         else if(isFile(argv[i])==1)
         {
