@@ -13,18 +13,9 @@
 #include "queue.h"
 #include "compare.h"
 
-
-void* fileThreadFunction(void *A)
-{
-    printf("Hello Directory\n");
-    sleep(3);
-    printf("Goodbye\n");
-}
-
 //directory thread
 void* directThreadFunction(void *A)
 {
-    
     struct targs* args = A;
     printf("Currently on Thread %d\n", args->id);
     while(args->directoryQueue->head!=NULL)
@@ -73,12 +64,27 @@ void* directThreadFunction(void *A)
 
 }
 //use this as a basis for our file thread
-void Files(Queue* fileQueue, char* suffix)
+void* fileThreadFunction(void *A)
 {
-    char* filename = queue_dequeue(fileQueue);
+    struct targs* args = A;
 
-    //wip
-    free(filename);
+    while(args->fileQueue->head!=NULL)
+    {
+        char* filename = queue_dequeue(args->fileQueue);
+
+        puts(filename);
+
+
+
+        free(filename);
+
+
+
+    }
+    
+    printf("Hello Directory\n");
+    //sleep(3);
+    printf("Goodbye\n");
 }
 
 int main(int argc, char* argv[])
@@ -164,14 +170,18 @@ int main(int argc, char* argv[])
     }
     for(; i <threads; i++)
     {
-        //pthread_create(&tids[i], NULL, fileThreadFunction,NULL);
+        args[i].directoryQueue = &fileQueue;
+        args[i].fileQueue = &fileQueue;
+        args[i].suffix = suffix;
+        args[i].id =  i;
+        pthread_create(&tids[i], NULL, fileThreadFunction,&args[i]);
     }
 
     //for(; i <threads; i++)
     //{
         //pthread_create(&tids[i])
     //}
-    for (i = 0; i < directoryThreads; ++i) 
+    for (i = 0; i < threads; ++i) 
     {
 		pthread_join(tids[i], NULL);
 	}
