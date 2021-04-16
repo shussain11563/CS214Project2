@@ -10,6 +10,8 @@ typedef struct Queue
     strbuf_t_node* rear;
     unsigned count;
     pthread_mutex_t lock;
+    pthread_cond_t read_ready;
+	pthread_cond_t write_ready;
     
 } Queue;
 

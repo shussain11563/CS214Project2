@@ -12,6 +12,8 @@ void queue_init(Queue* queue)
     queue->rear = NULL;
     unsigned count = 0;
     pthread_mutex_init(&queue->lock, NULL);
+    //pthread_cond_init(&queue->read_ready, NULL);
+	//pthread_cond_init(&queue->write_ready, NULL);
 }
 
 void queue_insert(Queue* queue, char* string)
@@ -28,6 +30,7 @@ void queue_insert(Queue* queue, char* string)
     {
         queue->head = node;
         queue->rear = node;
+        pthread_mutex_unlock(&queue->lock);
         return;
     }
 
@@ -35,6 +38,7 @@ void queue_insert(Queue* queue, char* string)
     queue->rear = node; 
     queue->count++;
     pthread_mutex_unlock(&queue->lock);
+    return;
 
 }
 

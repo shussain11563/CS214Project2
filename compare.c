@@ -20,7 +20,9 @@ void* directThreadFunction(void *A)
     printf("Currently on Thread %d\n", args->id);
     while(args->directoryQueue->head!=NULL)
     {
+        //puts("Grabbing");
         char* filename =  queue_dequeue(args->directoryQueue);
+        //puts("Grabbed");
         printf("Dequeued on Thread %d\n", args->id);
         DIR* dirp = opendir(filename);
         struct dirent* entry;
@@ -41,13 +43,13 @@ void* directThreadFunction(void *A)
                 //puts("File:");
                 //puts(comboString);
                 queue_insert(args->fileQueue,temp);
-                printf("Inserted File Thread %d\n", args->id);
+                //printf("Inserted File Thread %d\n", args->id);
             }
             else if(isDir(comboString)==1)
             {   
                 // puts("Directory:");
                 //puts(comboString);
-                printf("Inserted on Thread %d\n", args->id);
+                //printf("Inserted on Thread %d\n", args->id);
                 queue_insert(args->directoryQueue,temp);
             }
             //else
