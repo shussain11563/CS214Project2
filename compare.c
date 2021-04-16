@@ -21,6 +21,7 @@ void* directThreadFunction(void *A)
     while(args->directoryQueue->head!=NULL)
     {
         char* filename =  queue_dequeue(args->directoryQueue);
+        printf("Dequeued on Thread %d\n", args->id);
         DIR* dirp = opendir(filename);
         struct dirent* entry;
 
@@ -46,7 +47,7 @@ void* directThreadFunction(void *A)
             {   
                 // puts("Directory:");
                 //puts(comboString);
-                //printf("Inserted on Thread %d\n", args->id);
+                printf("Inserted on Thread %d\n", args->id);
                 queue_insert(args->directoryQueue,temp);
             }
             //else
@@ -68,10 +69,10 @@ void* directThreadFunction(void *A)
 void* fileThreadFunction(void *A)
 {
     struct targs* args = A;
-    puts("File Thread 1");
+    
     while(args->fileQueue->head!=NULL)
     {
-        puts("File Is Here");
+        
         char* filename = queue_dequeue(args->fileQueue);
 
         puts(filename);
@@ -84,9 +85,6 @@ void* fileThreadFunction(void *A)
 
     }
     
-    printf("Hello Directory\n");
-    //sleep(3);
-    printf("Goodbye\n");
 }
 
 int main(int argc, char* argv[])
@@ -180,8 +178,8 @@ int main(int argc, char* argv[])
     {
 		pthread_join(tids[j], NULL);
 	}
-
-    sleep(5);
+    /*
+    //sleep(5);
     for(; i <threads; i++)
     {
         args[i].directoryQueue = &directoryQueue;
@@ -194,7 +192,7 @@ int main(int argc, char* argv[])
     for (; j < threads; ++j) 
     {
 		pthread_join(tids[j], NULL);
-	}
+	}*/
     
 
 

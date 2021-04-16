@@ -9,6 +9,7 @@ typedef struct Queue
     strbuf_t_node* head;
     strbuf_t_node* rear;
     unsigned count;
+    pthread_mutex_t lock;
     
 } Queue;
 
