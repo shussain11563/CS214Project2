@@ -12,6 +12,13 @@
 #include "strbuf.h"
 #include "queue.h"
 
+struct dt_args {
+	Queue* Directory;
+    Queue* Directory;
+    char* suffix;
+
+};
+
 int isFile(char *filename)
 {
     struct stat meta_data;
@@ -159,42 +166,6 @@ char* stringParser(char* argument, char* flag)
     return ret;
 }
 
-
-void printDir(char* file, char* ret)
-{
-    DIR* dirp = opendir(file);
-    struct dirent* entry;
-
-        while(entry = readdir(dirp))
-        {
-            if(strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name)==0)
-            {
-                continue;
-            }
-
-            char* comboString = generateFilePath(file, entry->d_name);
-            if(isDir(comboString)==1)
-            {
-                printDir(comboString, comboString);
-            }
-            else
-            {
-                puts(comboString); 
-                free(comboString);
-            }
-
-        }
-        closedir(dirp);
-
-    if(ret!=NULL)
-    {
-        free(ret);
-    }
-    return;
-
-}
-
-
 void* directThreadFunction(void *A)
 {
     /*
@@ -221,6 +192,7 @@ void* fileThreadFunction(void *A)
     printf("Goodbye\n");
 }
 
+//use this as a basis for our directory thread
 void test(Queue* directoryQueue, Queue* fileQueue, char* suffix)
 {
     while(directoryQueue->head!=NULL)
@@ -267,6 +239,14 @@ void test(Queue* directoryQueue, Queue* fileQueue, char* suffix)
     }
 
 }
+//use this as a basis for our file thread
+void Files(Queue* fileQueue, char* suffix)
+{
+    char* filename = queue_dequeue(fileQueue);
+
+    //wip
+    free(filename);
+}
 
 int main(int argc, char* argv[])
 {
@@ -288,7 +268,7 @@ int main(int argc, char* argv[])
         if(isDir(argv[i])==1)
         {
             queue_insert(&directoryQueue, argv[i]);
-            test(&directoryQueue, &fileQueue, ".txt");
+            //test(&directoryQueue, &fileQueue, ".txt");
         }
         else if(isFile(argv[i])==1)
         {
@@ -322,9 +302,10 @@ int main(int argc, char* argv[])
         }
     }
     threads = directoryThreads+fileThreads+analysisThreads;
-    threads = directoryThreads+fileThreads;
+    threads = directoryThreads+fileThreads; //remove
 
     pthread_t* tids = malloc(sizeof(pthread_t) * threads);
+    struct dt_args *args = malloc(sizeof(dt_args));
 
     if(suffix==NULL)
     {
@@ -336,7 +317,7 @@ int main(int argc, char* argv[])
     int i = 0;
     for(; i <directoryThreads; i++)
     {
-        //pthread_create(&tids[i], NULL, directThreadFunction, NULL);
+        pthread_create(&tids[i], NULL, directThreadFunction, NULL);
     }
     for(; i <threads; i++)
     {
@@ -348,7 +329,7 @@ int main(int argc, char* argv[])
     //{
         //pthread_create(&tids[i])
     //}
-    for (i = 0; i < threads; ++i) 
+    for (i = 0; i < directoryThreads; ++i) 
     {
 		// /pthread_join(tids[i], NULL);
 	}
