@@ -172,13 +172,13 @@ void* fileThreadFunction(void *A)
     printf("Goodbye\n");
 }
 
-//use this as a basis for our directory thread
+//directory thread
 void* directThreadFunction(void *A)
 {
     struct dt_args* args = A;
-    while(directoryQueue->head!=NULL)
+    while(args->directoryQueue->head!=NULL)
     {
-        char* filename =  queue_dequeue(directoryQueue);
+        char* filename =  queue_dequeue(args->directoryQueue);
         DIR* dirp = opendir(filename);
         struct dirent* entry;
 
@@ -193,17 +193,17 @@ void* directThreadFunction(void *A)
             char* temp[strlen(comboString)+1];
             strcpy(temp, comboString);
 
-            if(isFile(comboString)==1 && isSuffix(comboString,suffix))
+            if(isFile(comboString)==1 && isSuffix(comboString,args->suffix))
             {
                 puts("File:");
                 puts(comboString);
-                queue_insert(fileQueue,temp);
+                queue_insert(args->fileQueue,temp);
             }
             else if(isDir(comboString)==1)
             {   
                 puts("Directory:");
                 puts(comboString);
-                queue_insert(directoryQueue,temp);
+                queue_insert(args->directoryQueue,temp);
             }
             //else
             //{   
@@ -294,10 +294,10 @@ int main(int argc, char* argv[])
     threads = directoryThreads+fileThreads; //remove
 
     pthread_t* tids = malloc(sizeof(pthread_t) * threads);
-    struct dt_args args = malloc(sizeof(dt_args));
+    struct dt_args* args;
 
-    args.directoryQueue = directoryQueue;
-    args.fileQueue = fileQueue;
+    args.directoryQueue = &directoryQueue;
+    args.fileQueue = &fileQueue;
     args.suffix = suffix;
 
 
