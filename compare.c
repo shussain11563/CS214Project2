@@ -13,10 +13,9 @@
 #include "queue.h"
 
 struct dt_args {
-	Queue* Directory;
-    Queue* Directory;
+	Queue* directoryQueue;
+    Queue* fileQueue;
     char* suffix;
-
 };
 
 int isFile(char *filename)
@@ -166,25 +165,6 @@ char* stringParser(char* argument, char* flag)
     return ret;
 }
 
-void* directThreadFunction(void *A)
-{
-    /*
-    //char* filename =  queue_dequeue(directoryQueue);
-    while(directoryQueue->head!=NULL)
-    {
-        //DIR* dirp = opendir(file);
-        //open function
-    }
-
-    free(filename);
-    */
-    ///////
-    //queue_dequeue()
-    printf("Hello File\n");
-    sleep(3);
-    printf("Goodbye\n");
-}
-
 void* fileThreadFunction(void *A)
 {
     printf("Hello Directory\n");
@@ -193,8 +173,9 @@ void* fileThreadFunction(void *A)
 }
 
 //use this as a basis for our directory thread
-void test(Queue* directoryQueue, Queue* fileQueue, char* suffix)
+void* directThreadFunction(void *A)
 {
+    struct dt_args* args = A;
     while(directoryQueue->head!=NULL)
     {
         char* filename =  queue_dequeue(directoryQueue);
@@ -301,23 +282,29 @@ int main(int argc, char* argv[])
             //illegal argument
         }
     }
-    threads = directoryThreads+fileThreads+analysisThreads;
-    threads = directoryThreads+fileThreads; //remove
-
-    pthread_t* tids = malloc(sizeof(pthread_t) * threads);
-    struct dt_args *args = malloc(sizeof(dt_args));
 
     if(suffix==NULL)
     {
         char* temp = ".txt";
         suffix = malloc(sizeof(char)*(strlen(temp)+1));
         strcpy(suffix, temp);
-    }
+    } 
+
+    threads = directoryThreads+fileThreads+analysisThreads;
+    threads = directoryThreads+fileThreads; //remove
+
+    pthread_t* tids = malloc(sizeof(pthread_t) * threads);
+    struct dt_args args = malloc(sizeof(dt_args));
+
+    args.directoryQueue = directoryQueue;
+    args.fileQueue = fileQueue;
+    args.suffix = suffix;
+
 
     int i = 0;
     for(; i <directoryThreads; i++)
     {
-        pthread_create(&tids[i], NULL, directThreadFunction, NULL);
+        pthread_create(&tids[i], NULL, directThreadFunction, &args);
     }
     for(; i <threads; i++)
     {
@@ -331,7 +318,7 @@ int main(int argc, char* argv[])
     //}
     for (i = 0; i < directoryThreads; ++i) 
     {
-		// /pthread_join(tids[i], NULL);
+		pthread_join(tids[i], NULL);
 	}
 
     
@@ -342,7 +329,7 @@ int main(int argc, char* argv[])
 
     puts(suffix);
     free(tids);
-
+    //free(args);
     free(suffix);
     queue_destroy(&directoryQueue);
     queue_destroy(&fileQueue);
