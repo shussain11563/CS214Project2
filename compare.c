@@ -12,6 +12,7 @@
 #include "strbuf.h"
 #include "queue.h"
 #include "compare.h"
+#include "wfd.h"
 
 //directory thread
 void* directThreadFunction(void *A)
@@ -180,8 +181,9 @@ int main(int argc, char* argv[])
     {
 		pthread_join(tids[j], NULL);
 	}
-    /*
-    //sleep(5);
+    
+    //experiemnt
+    sleep(5);
     for(; i <threads; i++)
     {
         args[i].directoryQueue = &directoryQueue;
@@ -194,7 +196,9 @@ int main(int argc, char* argv[])
     for (; j < threads; ++j) 
     {
 		pthread_join(tids[j], NULL);
-	}*/
+	}
+
+
     
 
 
