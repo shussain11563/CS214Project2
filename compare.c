@@ -40,12 +40,13 @@ void* directThreadFunction(void *A)
                 //puts("File:");
                 //puts(comboString);
                 queue_insert(args->fileQueue,temp);
+                printf("Inserted File Thread %d\n", args->id);
             }
             else if(isDir(comboString)==1)
             {   
                 // puts("Directory:");
                 //puts(comboString);
-                printf("Inserted on Thread %d\n", args->id);
+                //printf("Inserted on Thread %d\n", args->id);
                 queue_insert(args->directoryQueue,temp);
             }
             //else
@@ -67,9 +68,10 @@ void* directThreadFunction(void *A)
 void* fileThreadFunction(void *A)
 {
     struct targs* args = A;
-
+    puts("File Thread 1");
     while(args->fileQueue->head!=NULL)
     {
+        puts("File Is Here");
         char* filename = queue_dequeue(args->fileQueue);
 
         puts(filename);
@@ -168,24 +170,31 @@ int main(int argc, char* argv[])
         args[i].id =  i;
         pthread_create(&tids[i], NULL, directThreadFunction, &args[i]);
     }
-    for(; i <threads; i++)
-    {
-        args[i].directoryQueue = &fileQueue;
-        args[i].fileQueue = &fileQueue;
-        args[i].suffix = suffix;
-        args[i].id =  i;
-        pthread_create(&tids[i], NULL, fileThreadFunction,&args[i]);
-    }
 
     //for(; i <threads; i++)
     //{
         //pthread_create(&tids[i])
     //}
-    for (i = 0; i < threads; ++i) 
+    int j=0;
+    for (; j < directoryThreads; ++j) 
     {
-		pthread_join(tids[i], NULL);
+		pthread_join(tids[j], NULL);
 	}
 
+    sleep(5);
+    for(; i <threads; i++)
+    {
+        args[i].directoryQueue = &directoryQueue;
+        args[i].fileQueue = &fileQueue;
+        args[i].suffix = suffix;
+        args[i].id =  i;
+        pthread_create(&tids[i], NULL, fileThreadFunction,&args[i]);
+    }
+    
+    for (; j < threads; ++j) 
+    {
+		pthread_join(tids[j], NULL);
+	}
     
 
 
