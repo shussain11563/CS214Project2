@@ -16,6 +16,7 @@ struct dt_args {
 	Queue* directoryQueue;
     Queue* fileQueue;
     char* suffix;
+    int id;
 };
 
 int isFile(char *filename)
@@ -175,7 +176,9 @@ void* fileThreadFunction(void *A)
 //directory thread
 void* directThreadFunction(void *A)
 {
+    
     struct dt_args* args = A;
+    printf("Currently on Thread %d\n", args->id);
     while(args->directoryQueue->head!=NULL)
     {
         char* filename =  queue_dequeue(args->directoryQueue);
@@ -195,14 +198,15 @@ void* directThreadFunction(void *A)
 
             if(isFile(comboString)==1 && isSuffix(comboString,args->suffix))
             {
-                puts("File:");
-                puts(comboString);
+                //puts("File:");
+                //puts(comboString);
                 queue_insert(args->fileQueue,temp);
             }
             else if(isDir(comboString)==1)
             {   
-                puts("Directory:");
-                puts(comboString);
+                // puts("Directory:");
+                //puts(comboString);
+                printf("Inserted on Thread %d\n", args->id);
                 queue_insert(args->directoryQueue,temp);
             }
             //else
@@ -294,24 +298,27 @@ int main(int argc, char* argv[])
     threads = directoryThreads+fileThreads; //remove
 
     pthread_t* tids = malloc(sizeof(pthread_t) * threads);
-    struct dt_args* args;
+    struct dt_args* args = malloc(sizeof(struct dt_args) * threads);
 
-    args.directoryQueue = &directoryQueue;
-    args.fileQueue = &fileQueue;
-    args.suffix = suffix;
+    //args.directoryQueue = &directoryQueue;
+    //args.fileQueue = &fileQueue;
+    //args.suffix = suffix;
 
 
     int i = 0;
     for(; i <directoryThreads; i++)
     {
-        pthread_create(&tids[i], NULL, directThreadFunction, &args);
+        args[i].directoryQueue = &directoryQueue;
+        args[i].fileQueue = &fileQueue;
+        args[i].suffix = suffix;
+        args[i].id =  i;
+        pthread_create(&tids[i], NULL, directThreadFunction, &args[i]);
     }
     for(; i <threads; i++)
     {
         //pthread_create(&tids[i], NULL, fileThreadFunction,NULL);
     }
 
-    sleep(5);
     //for(; i <threads; i++)
     //{
         //pthread_create(&tids[i])
@@ -324,7 +331,7 @@ int main(int argc, char* argv[])
     
 
 
-
+    free(args); //remove
 
 
     puts(suffix);
