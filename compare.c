@@ -11,8 +11,9 @@
 
 #include "strbuf.h"
 #include "queue.h"
-#include "compare.h"
 #include "wfd.h"
+#include "compare.h"
+
 
 
 
@@ -74,11 +75,26 @@ void* directThreadFunction(void *A)
 void* fileThreadFunction(void *A)
 {
     struct targs* args = A;
-    
+
+    puts("F1");
     while(args->fileQueue->head!=NULL)
     {
         
+        
+        struct node* test=NULL;
+        puts("F2");
         char* filename = queue_dequeue(args->fileQueue);
+        puts(filename);
+        puts("F3");
+
+                    
+        char* temp[strlen(filename)+1];
+        strcpy(temp, filename);
+        test = wfd(temp);
+        
+
+        args->repo = wfd_repo_insert(args->repo, test);
+        //add to wfd repository
 
         puts(filename);
         //add to wfd repo
@@ -90,6 +106,8 @@ void* fileThreadFunction(void *A)
 
 
     }
+    puts("F4");
+    return;
     
 }
 
@@ -106,6 +124,7 @@ int main(int argc, char* argv[])
 
     queue_init(&directoryQueue);
     queue_init(&fileQueue);
+    wfdRepoNode* repo = NULL;
 
 
     for(int i = 1; i < argc; i++)
@@ -172,6 +191,7 @@ int main(int argc, char* argv[])
         args[i].fileQueue = &fileQueue;
         args[i].suffix = suffix;
         args[i].id =  i;
+        args[i].repo = repo;
         pthread_create(&tids[i], NULL, directThreadFunction, &args[i]);
     }
 
@@ -185,14 +205,17 @@ int main(int argc, char* argv[])
 		pthread_join(tids[j], NULL);
 	}
     
+    sleep(6);
+    puts("Finished Directory Threads");
     //experiemnt
-    sleep(5);
+    //sleep(5);
     for(; i <threads; i++)
     {
         args[i].directoryQueue = &directoryQueue;
         args[i].fileQueue = &fileQueue;
         args[i].suffix = suffix;
         args[i].id =  i;
+        args[i].repo = repo;
         pthread_create(&tids[i], NULL, fileThreadFunction,&args[i]);
     }
     
@@ -203,10 +226,12 @@ int main(int argc, char* argv[])
 
 
     
+    //initialize wfdrepo to null
 
 
     free(args); //remove
 
+    free_wfd_repo(repo);
 
     puts(suffix);
     free(tids);

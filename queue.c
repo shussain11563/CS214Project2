@@ -49,6 +49,7 @@ char* queue_dequeue(Queue* queue)
     //handles if empty
     if(queue->head==NULL)
     {
+        pthread_mutex_unlock(&queue->lock);
         return; //EMPTY //change this
     }
 
