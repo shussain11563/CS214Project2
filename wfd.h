@@ -13,6 +13,8 @@
 
 struct node* wfd(int file);
 double jsd(struct node* list1, struct node* list2);
+struct node* insert(struct node* front, char* word, int count);
+void freeList(struct node* front);
 
 struct node{
     int count;
@@ -23,10 +25,33 @@ struct node{
     struct node* next;
 };
 
+typedef struct wfdRepoNode
+{
+    struct wfd* data;
+    struct wfdRepo* next;
+} 
+wfdRepoNode;
 
-struct node* insert(struct node* front, char* word, int count);
-void freeList(struct node* front);
+wfdRepoNode* wfd_repo_insert(wfdRepoNode* repo, struct wfd* data)
+{
+    wfdRepoNode* node = malloc(sizeof(wfdRepoNode));
+    node->data = data;
+    node->next = NULL;
+    if(repo==NULL)
+    {
+        return node;
+    }
 
+    wfdRepoNode* prev = NULL;
+    wfdRepoNode* ptr = repo;
+    while(ptr!=NULL)
+    {
+        prev = ptr;
+        ptr = ptr->next;
+    }
+    prev->next =  node;
+    return repo;
+}
 
 struct node* insert(struct node* front,  char* word, int count){
     struct node* n;
@@ -255,4 +280,32 @@ double jsd(struct node* list1, struct node* list2){
     jsd = sqrt((kld1/2)+(kld2/2));
 
     return jsd;
+}
+
+
+void free_wfd(struct node* head)
+{
+    struct node* ptr = head;
+    struct node* prev = NULL;
+    while(ptr!=NULL)
+    {
+		prev=ptr;
+		ptr=ptr->next;
+        puts(prev->word);
+        free(prev->word);
+		free(prev);
+	}
+}
+
+void free_wfd_repo(wfdRepoNode* head)
+{
+    wfdRepoNode* prev = NULL;
+    wfdRepoNode* ptr = head;
+    while(ptr!=NULL)
+    {
+        prev = ptr;
+        ptr = ptr->next;
+        free_wfd(prev->data);
+        free(prev);
+    }
 }

@@ -14,6 +14,8 @@
 #include "compare.h"
 #include "wfd.h"
 
+
+
 //directory thread
 void* directThreadFunction(void *A)
 {
@@ -79,6 +81,7 @@ void* fileThreadFunction(void *A)
         char* filename = queue_dequeue(args->fileQueue);
 
         puts(filename);
+        //add to wfd repo
 
 
 
