@@ -11,9 +11,10 @@ void queue_init(Queue* queue)
     queue->head = NULL;
     queue->rear = NULL;
     unsigned count = 0;
+    queue->open = 1;
     pthread_mutex_init(&queue->lock, NULL);
-    //pthread_cond_init(&queue->read_ready, NULL);
-	//pthread_cond_init(&queue->write_ready, NULL);
+    pthread_cond_init(&queue->read_ready, NULL);
+	pthread_cond_init(&queue->write_ready, NULL);
 }
 
 void queue_insert(Queue* queue, char* string)

@@ -69,6 +69,7 @@ void* directThreadFunction(void *A)
         free(filename);
         //open function
     }
+    return;
 
 }
 //use this as a basis for our file thread
