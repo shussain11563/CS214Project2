@@ -15,8 +15,6 @@
 #include "compare.h"
 
 
-
-
 //directory thread
 void* directThreadFunction(void *A)
 {

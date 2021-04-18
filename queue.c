@@ -50,6 +50,7 @@ char* queue_dequeue(Queue* queue)
     //handles if empty
     if(queue->head==NULL)
     {
+        //add condition wait
         pthread_mutex_unlock(&queue->lock);
         return; //EMPTY //change this
     }
