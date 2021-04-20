@@ -6,6 +6,18 @@ struct targs {
     int id;
 };
 
+struct analysis_args
+{
+    size_t threadNumber;
+    size_t totalThreads;
+    struct node** wfdArray;
+    size_t wfdArray_size;
+    struct comp_result** results;
+    int* occupied;
+    pthread_mutex_t* lock;
+
+};
+
 int isFile(char *filename)
 {
     struct stat meta_data;

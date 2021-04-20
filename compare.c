@@ -14,10 +14,92 @@
 #include "wfd.h"
 #include "compare.h"
 
+void result_insert(struct comp_result* results, struct comp_result data, int* count)
+{
+
+    return;
+}
+
 void* analysis(void *A)
 {
+    struct analysis_args* a_args = A;
+
+
+    for(int i = a_args->threadNumber; i < a_args->wfdArray_size; i=i+a_args->totalThreads)
+    {
+        for(int j = i+1; j < a_args->wfdArray_size; j++)
+        {
+            struct node* ptr1 = a_args->wfdArray[i];
+            struct node* ptr2 = a_args->wfdArray[j];
+
+
+            struct comp_result* temp = malloc(sizeof(struct comp_result));
+            
+            temp->file1 = malloc(strlen(ptr1->fileName)+1);
+            temp->file2 = malloc(strlen(ptr2->fileName)+1);
+
+            char word1[strlen(ptr1->fileName)+1];
+            char word2[strlen(ptr1->fileName)+1];
+            strcpy(word1, ptr1->fileName);
+            strcpy(word2, ptr2->fileName);
+
+            
+            strcpy(temp->file1, word1);
+            strcpy(temp->file2, word2);
+
+            temp->tokens = ptr1->numOfWords + ptr2->numOfWords;
+            temp->distance = jsd(ptr1, ptr2);
+            
+
+            pthread_mutex_lock(a_args->lock);
+            a_args->results[*a_args->occupied] = temp;
+            *a_args->occupied = (*a_args->occupied)++;
+            pthread_mutex_unlock(a_args->lock);
+
+
+            printf("We are at count %d \n", *a_args->occupied);
+            //free(temp->file1);
+            //free(temp->file2);
+            //free(temp);
+            //insert into 
+            /*
+            pthread_mutex_lock(a_args->lock);
+            //result_insert(a_args->wfdArray_size,&temp,a_args->occupied);
+
+            printf("We are at count %d \n", *a_args->occupied);
+            a_args->results[*a_args->occupied] = temp;
+
+            *a_args->occupied = (*a_args->occupied)++;
+            *a_args->occupied = *a_args->occupied++;
+            pthread_mutex_unlock(a_args->lock);
+            */
+        }
+    }
+/*
+    //we take information on what thread is running
+    //we take info on how many threads there are 
+
     
+
+    struct comp_result {
+    char *file1, *file2;
+    unsigned tokens;     // word count of file 1 + file 2
+    double distance;     // JSD between file 1 and file 2
+    };
+
+            a_args[i].threadNumber = i;
+        a_args[i].totalThreads = analysisThreads;
+        a_args[i].wfdArray = arr;
+        a_args[i].results=results;
+        wfdArray_size
+
+        */
+
 }
+
+
+
+
 
 //directory thread
 void* directThreadFunction(void *A)
@@ -78,66 +160,35 @@ void* directThreadFunction(void *A)
     return;
 
 }
-//use this as a basis for our file thread
-//use this as a basis for our file thread
+
+
 void* fileThreadFunction(void *A)
 {
-    //sleep(1);
+
     struct targs* args = A;
  
-    //puts("Entering File Thread");
+
     char* filename =  queue_dequeue_file(args->fileQueue, args->directoryQueue);
-    //char* filename;
+
     while(filename)
     {
         
-        //puts("Waiting to Dequeue in File Thread");
-        
-        /*
-        if(filename==NULL)
-        {
-            return;
-            puts("Ending File Thread because null");
-        }*/
-        //struct node* test=NULL;
-        //puts("Successful in Dequeue in File Thread");
-        //char* filename = queue_dequeue(args->fileQueue);
-        
-
-
-        //puts(filename);
-        //free(filename);
-        
-
         char temp[strlen(filename)+1];
         strcpy(temp, filename);
-        puts("Hello");
 
         int file = open(temp, O_RDONLY);
-        struct node* test = wfd(file);
+        //truct node* test = wfd(file,temp);
+        struct node* test = wfd(file,temp);
 
         close(file);
 
         wfd_repo_insert(args->repo, test);
 
-
-        
-
-
-        
-        puts("Goodbye");
-        
-        //args->repo = wfd_repo_insert(args->repo, test);
-        //add to wfd repository
-        //puts(filename);
-        //add to wfd repo
-        //free(filename);
-        //puts("Deqeuing");
         puts(filename);
         free(filename);
         filename =  queue_dequeue_file(args->fileQueue, args->directoryQueue);
     }
-    //puts("Ending File Thread");
+
     return;
 }
 
@@ -205,8 +256,8 @@ int main(int argc, char* argv[])
         strcpy(suffix, temp);
     } 
     collection_thread_count = directoryThreads+fileThreads; //remove
-    pthread_t* tids = malloc(sizeof(pthread_t) * collection_thread_count+analysisThreads);
-    struct targs* args = malloc(sizeof(struct targs) * collection_thread_count+analysisThreads);
+    pthread_t* tids = malloc(sizeof(pthread_t) * collection_thread_count);
+    struct targs* args = malloc(sizeof(struct targs) * collection_thread_count);
 
 
     /*
@@ -247,7 +298,6 @@ int main(int argc, char* argv[])
         pthread_create(&tids[i], NULL, fileThreadFunction,&args[i]);
     }
     
-    //for (int j=0; j < directoryThreads; ++j) 
     int j=0;
     for (; j < collection_thread_count; ++j) 
     {
@@ -256,35 +306,92 @@ int main(int argc, char* argv[])
 
 
     
-    //sleep(5);
+
     
     queue_close(&directoryQueue);
 	queue_close(&fileQueue);
 	//printf("[ ] Queue closed\n");
 
-    //struct node* test=NULL;
-    //test = wfd("poo.txt");
 
-    for (; i < collection_thread_count+analysisThreads; ++i) 
+
+
+
+
+
+    
+    pthread_t* a_tids = malloc(sizeof(pthread_t) * analysisThreads);
+    struct analysis_args* a_args = malloc(sizeof(struct analysis_args) * analysisThreads);
+    struct node** arr = malloc(sizeof(struct node*)*repo.count);
+    struct comp_result** results = malloc(sizeof(struct comp_result*) * ((repo.count*(repo.count-1))/2));
+    int *occupied = malloc(sizeof(int));
+    *occupied =0;
+
+
+    wfdRepoNode* ptr = repo.head;
+    int k = 0;
+    //wfdRepoNode* prev = NULL;
+    puts("This is the filename");
+    while(ptr!=NULL)
     {
-		//pthread_join(tids[i], NULL);
+        arr[k]=ptr->data;
+        struct node* temp = arr[k];
+        //puts(temp->fileName);
+        //puts(ptr->data->fileName);
+        ptr = ptr->next;
+        k++;
+    }
+
+    //create array of structs
+   
+    pthread_mutex_t lock;
+    pthread_mutex_init(&lock, NULL); 
+    
+    for (int i=0; i < analysisThreads; ++i) 
+    {
+        a_args[i].threadNumber = i;
+        a_args[i].totalThreads = analysisThreads;
+        a_args[i].wfdArray = arr;
+        a_args[i].results=results;
+        a_args[i].wfdArray_size=repo.count;
+        a_args[i].lock = &lock;
+        a_args[i].occupied = occupied;
+
+
+        //a_args[i].
+
+        //pass in wfdRepo Array vesion
+        //pass in comp_rsults array
+
+
+        pthread_create(&a_tids[i], NULL, analysis,&a_args[i]);
+		////pthread_join(tids[i], NULL);
 	}
 
-    for (; j < collection_thread_count+analysisThreads; ++j) 
+    for (int j=0; j < analysisThreads; ++j) 
     {
-		//pthread_join(tids[j], NULL);
+		pthread_join(a_tids[j], NULL);
 	}
 
+    for(int i = 0; i <(repo.count*(repo.count-1))/2; i++)
+    {
+        struct comp_result* temp =  results[i];
+        printf("%s %s %d %f \n", temp->file1, temp->file2, temp->tokens, temp->distance);
+        free(temp->file1);
+        free(temp->file2);
+        free(temp);
+        //free(results[i]);
+    } 
 
-
-
-
-
-
-    free(args); //remove
+    free(occupied);
+    pthread_mutex_destroy(&lock);
+    free(results);
+    free(a_args);
+    free(args);
+    free(arr); //remove
     free_wfd_repo(&repo);
     puts(suffix);
     free(tids);
+    free(a_tids);
     //free(args);
     free(suffix);
     queue_destroy(&directoryQueue);

@@ -11,9 +11,9 @@
 #include <string.h>
 
 
-struct node* wfd(int file);
+struct node* wfd(int file, char* fileName);
 double jsd(struct node* list1, struct node* list2);
-struct node* insert(struct node* front, char* word, int count);
+struct node* insert(struct node* front, char* word, int count, char* fileN);
 void freeList(struct node* front);
 
 struct node{
@@ -22,7 +22,14 @@ struct node{
     double frequency;
     double meanFreq;
     char* word;
+    char* fileName;
     struct node* next;
+};
+
+struct comp_result {
+    char *file1, *file2;
+    unsigned tokens;     // word count of file 1 + file 2
+    double distance;     // JSD between file 1 and file 2
 };
 
 
@@ -50,7 +57,7 @@ void wfd_repo_init(wfdRepo* repo)
     repo->head = NULL;
     pthread_mutex_init(&repo->lock, NULL);
     pthread_cond_init(&repo->read_ready, NULL);
-    repo->count;
+    repo->count=0;;
     
 }
 
@@ -61,6 +68,7 @@ void wfd_repo_insert(wfdRepo* repo, struct wfd* data)
     wfdRepoNode* node = malloc(sizeof(wfdRepoNode));
     node->data = data;
     node->next = NULL;
+    repo->count++;
     if(repo->head==NULL)
     {
         repo->head=node;
@@ -96,6 +104,7 @@ void free_wfd(struct node* head)
 		ptr=ptr->next;
         puts(prev->word);
         free(prev->word);
+        free(prev->fileName);
 		free(prev);
 	}
 }
@@ -119,10 +128,7 @@ void free_wfd_repo(wfdRepo* repo)
 
 /////.///////////////
 
-struct node* insert(struct node* front,  char* word, int count)
-{
-
-    puts("Inserting in struct insert wfd");
+struct node* insert(struct node* front,  char* word, int count, char* fileN){
     struct node* n;
     n=(struct node*)malloc(sizeof(struct node));
     if(!n){
@@ -134,11 +140,17 @@ struct node* insert(struct node* front,  char* word, int count)
     n->meanFreq=0;
 	n->frequency=0;
     n->word=malloc(strlen(word)+1);
+    n->fileName=malloc(strlen(fileN)+1);
     if(!n->word){
         puts("Out of memory");
         exit(EXIT_FAILURE);
     }
+    if(!n->fileName){
+        puts("Out of memory");
+        exit(EXIT_FAILURE);
+    }
     strcpy(n->word,word);
+    strcpy(n->fileName,fileN);
     n->next=NULL;
 	struct node* ptr = front;
 
@@ -163,6 +175,7 @@ struct node* insert(struct node* front,  char* word, int count)
         else if(strcmp(ptr->word,n->word)==0){
             ++ptr->count;
             free(n->word);
+            free(n->fileName);
             free(n);
             return front;
         }
@@ -172,6 +185,7 @@ struct node* insert(struct node* front,  char* word, int count)
     if(strcmp(ptr->word,n->word)==0){
         ++ptr->count;
         free(n->word);
+        free(n->fileName);
         free(n);
         return front;
     }
@@ -186,13 +200,16 @@ void freeList(struct node* front){
 	while(front!=NULL){
 		temp=front;
 		front=front->next;
+        free(temp->word);
+        free(temp->fileName);
 		free(temp);
 	}
 }
 
 /////
 
-struct node* wfd(int file){
+struct node* wfd(int file, char* fileName)
+{
     struct node* words = NULL;
     char* w;
     strbuf_t buf;
@@ -204,7 +221,8 @@ struct node* wfd(int file){
 
     bytes_read = read(file,buf.data,20);
 
-    if(bytes_read==0){//empty file
+    if(bytes_read==0)
+    {//empty file
         sb_destroy(&buf);
         sb_destroy(&temp);
         words=NULL;
@@ -254,7 +272,7 @@ struct node* wfd(int file){
                         }
                     }
                     numberOfWords++;
-                    words = insert(words,w,1);
+                    words = insert(words,w,1, fileName);
                     free(w);
                 }
             }
@@ -294,7 +312,8 @@ struct node* wfd(int file){
     return words;
 }
 
-/*
+
+
 double jsd(struct node* list1, struct node* list2){
     struct node* ptr1 = list1;
     struct node* ptr2 = list2;
@@ -351,7 +370,7 @@ double jsd(struct node* list1, struct node* list2){
 
     return jsd;
 }
-*/
+
 
 /*
 void free_wfd(struct node* head)
