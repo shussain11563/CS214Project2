@@ -205,8 +205,8 @@ int main(int argc, char* argv[])
         strcpy(suffix, temp);
     } 
     collection_thread_count = directoryThreads+fileThreads; //remove
-    pthread_t* tids = malloc(sizeof(pthread_t) * collection_thread_count);
-    struct targs* args = malloc(sizeof(struct targs) * collection_thread_count);
+    pthread_t* tids = malloc(sizeof(pthread_t) * collection_thread_count+analysisThreads);
+    struct targs* args = malloc(sizeof(struct targs) * collection_thread_count+analysisThreads);
 
 
     /*
@@ -248,7 +248,8 @@ int main(int argc, char* argv[])
     }
     
     //for (int j=0; j < directoryThreads; ++j) 
-    for (int j=0; j < collection_thread_count; ++j) 
+    int j=0;
+    for (; j < collection_thread_count; ++j) 
     {
 		pthread_join(tids[j], NULL);
 	}
@@ -259,10 +260,24 @@ int main(int argc, char* argv[])
     
     queue_close(&directoryQueue);
 	queue_close(&fileQueue);
-	printf("[ ] Queue closed\n");
+	//printf("[ ] Queue closed\n");
 
     //struct node* test=NULL;
     //test = wfd("poo.txt");
+
+    for (; i < collection_thread_count+analysisThreads; ++i) 
+    {
+		//pthread_join(tids[i], NULL);
+	}
+
+    for (; j < collection_thread_count+analysisThreads; ++j) 
+    {
+		//pthread_join(tids[j], NULL);
+	}
+
+
+
+
 
 
 

@@ -26,6 +26,8 @@ struct node{
 };
 
 
+
+/////////////////////
 typedef struct wfdRepoNode
 {
     struct wfd* data;
@@ -55,7 +57,7 @@ void wfd_repo_init(wfdRepo* repo)
 void wfd_repo_insert(wfdRepo* repo, struct wfd* data)
 {
     pthread_mutex_lock(&repo->lock);
-    //puts("Inserting in repo insert wfd");
+    puts("Inserting in repo insert wfd");
     wfdRepoNode* node = malloc(sizeof(wfdRepoNode));
     node->data = data;
     node->next = NULL;
@@ -79,6 +81,10 @@ void wfd_repo_insert(wfdRepo* repo, struct wfd* data)
     return;
 }
 
+
+
+
+
 void free_wfd(struct node* head)
 {
 
@@ -96,8 +102,8 @@ void free_wfd(struct node* head)
 
 void free_wfd_repo(wfdRepo* repo)
 {
-    wfdRepoNode* ptr = repo->head;
     wfdRepoNode* prev = NULL;
+    wfdRepoNode* ptr = repo->head;
     while(ptr!=NULL)
     {
         prev = ptr;
@@ -105,41 +111,14 @@ void free_wfd_repo(wfdRepo* repo)
         free_wfd(prev->data);
         free(prev);
     }
-}///////////////////////
-
-
-/*  
-typedef struct wfdRepo
-{
-    //struct wfd* data;
-    //struct wfdRepo* next;
-} 
-wfdRepo;
-
-wfdRepoNode* wfd_repo_insert(wfdRepoNode* repo, struct wfd* data)
-{
-    pthread_mutex_lock(&repo->lock);
-    puts("Inserting in repo insert wfd");
-    wfdRepoNode* node = malloc(sizeof(wfdRepoNode));
-    node->data = data;
-    node->next = NULL;
-    if(repo==NULL)
-    {
-        return node;
-    }
-
-    wfdRepoNode* prev = NULL;
-    wfdRepoNode* ptr = repo;
-    while(ptr!=NULL)
-    {
-        prev = ptr;
-        ptr = ptr->next;
-    }
-    prev->next =  node;
-    pthread_mutex_unlock(&repo->lock);
-    return repo;
 }
-*/
+
+
+
+
+
+/////.///////////////
+
 struct node* insert(struct node* front,  char* word, int count)
 {
 
@@ -315,6 +294,7 @@ struct node* wfd(int file){
     return words;
 }
 
+/*
 double jsd(struct node* list1, struct node* list2){
     struct node* ptr1 = list1;
     struct node* ptr2 = list2;
@@ -371,6 +351,7 @@ double jsd(struct node* list1, struct node* list2){
 
     return jsd;
 }
+*/
 
 /*
 void free_wfd(struct node* head)
