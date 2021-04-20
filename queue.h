@@ -8,7 +8,8 @@ typedef struct Queue
 {
     strbuf_t_node* head;
     strbuf_t_node* rear;
-    unsigned count;
+    int count;
+    int activeThread;
     int open;
     pthread_mutex_t lock;
     pthread_cond_t read_ready;
@@ -18,5 +19,8 @@ typedef struct Queue
 
 void queue_init(Queue* );
 void queue_insert(Queue* , char* );
-char* queue_dequeue(Queue* );
+//char* queue_dequeue(Queue* );
+char* queue_dequeue_dir(Queue* dirQueue, Queue* fileQueue);
+char* queue_dequeue_file(Queue* fileQueue, Queue* dirQueue);
 void queue_destroy(Queue* );
+void queue_close(Queue* );

@@ -1,0 +1,52 @@
+directory thread
+    loop
+        read directory name from queue
+        open directory
+            add entries to file or directory queues
+    repeat until directory queue is empty and all directory threads are waiting
+
+///
+while(directory queue is not empty)
+{
+    folder  <------  dequeue
+    read(folder)
+        while(each entry in folder is not null)
+        {
+            if file, add file to file queue
+
+            if directory, add directory to directory queue
+        }
+    end
+}
+
+
+-----> we want the dequeues to be stuck  when the queue is empty, we reduce the number of active threads when they are waiting
+
+----> once we reach one thread, we wake and terminatw
+
+
+--------------------------
+
+while(file queue is not empty and )
+{
+    folder  <------  dequeue
+    read(folder)
+        while(each entry in folder is not null)
+        {
+            if file, add file to file queue
+
+            if directory, add directory to directory queue
+        }
+    end
+}
+
+
+
+file thread
+    loop
+        read file name from file queue
+        open file
+        count all words in file
+        compute WFD
+        add to WFD repository
+    repeat until the queue is empty and the directory threads have stopped

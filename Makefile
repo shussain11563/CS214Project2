@@ -1,7 +1,7 @@
 
 
 compare: compare.o strbuf.o queue.o compare.h wfd.h
-	gcc -g -lpthread -std=c99 -Wvla -Wall -fsanitize=address,undefined -o compare compare.o strbuf.o queue.o -lm
+	gcc -g -pthread -std=c99 -Wvla -Wall -fsanitize=address,undefined -o compare compare.o strbuf.o queue.o -lm
 	rm *.o
 
 compare.o: compare.c strbuf.h queue.h

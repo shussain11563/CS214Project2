@@ -14,19 +14,34 @@
 #include "wfd.h"
 #include "compare.h"
 
+void* analysis(void *A)
+{
+    
+}
 
 //directory thread
 void* directThreadFunction(void *A)
 {
     struct targs* args = A;
+    
+    pthread_mutex_lock(&args->directoryQueue->lock);
+    args->directoryQueue->activeThread++;
+    pthread_mutex_unlock(&args->directoryQueue->lock);
+    //while(args->directoryQueue->count!=0 && args->directoryQueue->activeThread!=0)
+
     printf("Currently on Thread %d\n", args->id);
-    while(args->directoryQueue->head!=NULL)
+    char* filename = queue_dequeue_dir(args->directoryQueue, args->fileQueue);
+    while(filename)
     {
-        //puts("Grabbing");
-        char* filename =  queue_dequeue(args->directoryQueue);
-        //puts("Grabbed");
-        printf("Dequeued on Thread %d\n", args->id);
+        //char* filename =  queue_dequeue_dir(args->directoryQueue, args->fileQueue);
+        if(filename==NULL)
+        {
+            return;
+        }
+        //printf("Dequeued on Thread %d\n", args->id);
+        
         DIR* dirp = opendir(filename);
+        //printf("Dequeued on Thread %d\n", args->id);
         struct dirent* entry;
 
         while(entry = readdir(dirp))
@@ -35,79 +50,78 @@ void* directThreadFunction(void *A)
             {
                 continue;
             }
-            //if(isSuffix(filename,suffix)==1 && isFile(filename)==1)
             char* comboString = generateFilePath(filename, entry->d_name);
             char* temp[strlen(comboString)+1];
             strcpy(temp, comboString);
+            
 
             if(isFile(comboString)==1 && isSuffix(comboString,args->suffix))
             {
-                //puts("File:");
-                //puts(comboString);
+                //printf("Inserted File Thread  ?? %d\n", args->id);
                 queue_insert(args->fileQueue,temp);
-                //printf("Inserted File Thread %d\n", args->id);
+                //pthread_cond_broadcast(&(args->fileQueue->read_ready));
+                printf("Inserted File Thread %d\n", args->id);
             }
             else if(isDir(comboString)==1)
-            {   
-                // puts("Directory:");
-                //puts(comboString);
-                //printf("Inserted on Thread %d\n", args->id);
+            {  
+                //printf("Inserted Directory Thread %d\n", args->id);
                 queue_insert(args->directoryQueue,temp);
             }
-            //else
-            //{   
-                //puts(comboString); 
-                //free(comboString);
-            //}
             free(comboString);
-            //printf("Faied to read Directory. The entry was %s  \n", entry->d_name);
-
         }
+        
         closedir(dirp);
         free(filename);
+        filename =  queue_dequeue_dir(args->directoryQueue, args->fileQueue);
         //open function
     }
     return;
 
 }
 //use this as a basis for our file thread
+//use this as a basis for our file thread
 void* fileThreadFunction(void *A)
 {
+    //sleep(1);
     struct targs* args = A;
-
-    puts("F1");
-    while(args->fileQueue->head!=NULL)
+ 
+    puts("Entering File Thread");
+    char* filename =  queue_dequeue_file(args->fileQueue, args->directoryQueue);
+    //char* filename;
+    while(filename)
     {
+        //puts("Waiting to Dequeue in File Thread");
         
-        
-        struct node* test=NULL;
-        puts("F2");
-        char* filename = queue_dequeue(args->fileQueue);
-        puts(filename);
-        puts("F3");
+        /*
+        if(filename==NULL)
+        {
+            return;
+            puts("Ending File Thread because null");
+        }*/
+        //struct node* test=NULL;
+        //puts("Successful in Dequeue in File Thread");
+        //char* filename = queue_dequeue(args->fileQueue);
 
-                    
-        char* temp[strlen(filename)+1];
-        strcpy(temp, filename);
-        test = wfd(temp);
-        
 
-        args->repo = wfd_repo_insert(args->repo, test);
-        //add to wfd repository
 
         puts(filename);
-        //add to wfd repo
-
-
-
         free(filename);
-
-
-
+        
+        //puts(filename);
+        //puts("F3");  
+        //char* temp[strlen(filename)+1];
+        //strcpy(temp, filename);
+        //test = wfd(temp);
+        //args->repo = wfd_repo_insert(args->repo, test);
+        //add to wfd repository
+        //puts(filename);
+        //add to wfd repo
+        //free(filename);
+        //puts("Deqeuing");
+        filename =  queue_dequeue_file(args->fileQueue, args->directoryQueue);
     }
-    puts("F4");
+    //puts("Ending File Thread");
     return;
-    
 }
 
 int main(int argc, char* argv[])
@@ -115,7 +129,7 @@ int main(int argc, char* argv[])
     int directoryThreads = 1;
     int fileThreads = 1;
     int analysisThreads = 1;
-    int threads;
+    int collection_thread_count;
     //char* suffix = ".txt";
     char* suffix = NULL;
     Queue directoryQueue;
@@ -124,6 +138,7 @@ int main(int argc, char* argv[])
     queue_init(&directoryQueue);
     queue_init(&fileQueue);
     wfdRepoNode* repo = NULL;
+
 
 
     for(int i = 1; i < argc; i++)
@@ -164,27 +179,35 @@ int main(int argc, char* argv[])
             //illegal argument
         }
     }
-
     if(suffix==NULL)
     {
         char* temp = ".txt";
         suffix = malloc(sizeof(char)*(strlen(temp)+1));
         strcpy(suffix, temp);
     } 
+    collection_thread_count = directoryThreads+fileThreads; //remove
+    pthread_t* tids = malloc(sizeof(pthread_t) * collection_thread_count);
+    struct targs* args = malloc(sizeof(struct targs) * collection_thread_count);
 
-    threads = directoryThreads+fileThreads+analysisThreads;
-    threads = directoryThreads+fileThreads; //remove
 
-    pthread_t* tids = malloc(sizeof(pthread_t) * threads);
-    struct targs* args = malloc(sizeof(struct targs) * threads);
+    /*
+    strbuf_t_node* prev = NULL;
+    strbuf_t_node* ptr = directoryQueue.head;
+    while(ptr!=NULL)
+    {
+        prev = ptr;
+        ptr = ptr->next;
+        char* f =  queue_dequeue_file(&directoryQueue, &fileQueue);
+        puts(f);
+        free(f);
+    }
+    
 
-    //args.directoryQueue = &directoryQueue;
-    //args.fileQueue = &fileQueue;
-    //args.suffix = suffix;
+    */
 
 
     int i = 0;
-    for(; i <directoryThreads; i++)
+    for(int i=0; i <directoryThreads; i++)
     {
         args[i].directoryQueue = &directoryQueue;
         args[i].fileQueue = &fileQueue;
@@ -194,21 +217,8 @@ int main(int argc, char* argv[])
         pthread_create(&tids[i], NULL, directThreadFunction, &args[i]);
     }
 
-    //for(; i <threads; i++)
-    //{
-        //pthread_create(&tids[i])
-    //}
-    int j=0;
-    for (; j < directoryThreads; ++j) 
-    {
-		pthread_join(tids[j], NULL);
-	}
-    
-    sleep(6);
     puts("Finished Directory Threads");
-    //experiemnt
-    //sleep(5);
-    for(; i <threads; i++)
+    for(; i <collection_thread_count; i++)
     {
         args[i].directoryQueue = &directoryQueue;
         args[i].fileQueue = &fileQueue;
@@ -218,20 +228,25 @@ int main(int argc, char* argv[])
         pthread_create(&tids[i], NULL, fileThreadFunction,&args[i]);
     }
     
-    for (; j < threads; ++j) 
+    //for (int j=0; j < directoryThreads; ++j) 
+    for (int j=0; j < collection_thread_count; ++j) 
     {
 		pthread_join(tids[j], NULL);
 	}
 
 
+    //sleep(5);
     
-    //initialize wfdrepo to null
+    queue_close(&directoryQueue);
+	queue_close(&fileQueue);
+	printf("[ ] Queue closed\n");
+
+
+
 
 
     free(args); //remove
-
     free_wfd_repo(repo);
-
     puts(suffix);
     free(tids);
     //free(args);
@@ -239,7 +254,6 @@ int main(int argc, char* argv[])
     queue_destroy(&directoryQueue);
     queue_destroy(&fileQueue);
     return EXIT_SUCCESS;
-
 
     //close queue function
 
