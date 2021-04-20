@@ -56,9 +56,9 @@ char* queue_dequeue_dir(Queue* dirQueue, Queue* fileQueue)
     pthread_mutex_lock(&dirQueue->lock);
     //handles if empty
     //printf("Queue %d\n",dirQueue->count);
-    printf("No active threads left %d \n", dirQueue->activeThread);
+    //printf("No active threads left %d \n", dirQueue->activeThread);
 
-    printf("No size left %d \n", dirQueue->count);
+    //printf("No size left %d \n", dirQueue->count);
     if(dirQueue->count==0) // if queue->head is null and queue is opne, wait
     {
         dirQueue->activeThread--;
@@ -84,7 +84,7 @@ char* queue_dequeue_dir(Queue* dirQueue, Queue* fileQueue)
     }
 
     //grabs the first head
-    puts("This message should only occur once");
+    //puts("This message should only occur once");
     strbuf_t_node* retHead = dirQueue->head;
 
     strbuf_t temp = retHead->node;

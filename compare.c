@@ -29,7 +29,7 @@ void* directThreadFunction(void *A)
     pthread_mutex_unlock(&args->directoryQueue->lock);
     //while(args->directoryQueue->count!=0 && args->directoryQueue->activeThread!=0)
 
-    printf("Currently on Thread %d\n", args->id);
+    //printf("Currently on Thread %d\n", args->id);
     char* filename = queue_dequeue_dir(args->directoryQueue, args->fileQueue);
     while(filename)
     {
@@ -60,7 +60,7 @@ void* directThreadFunction(void *A)
                 //printf("Inserted File Thread  ?? %d\n", args->id);
                 queue_insert(args->fileQueue,temp);
                 //pthread_cond_broadcast(&(args->fileQueue->read_ready));
-                printf("Inserted File Thread %d\n", args->id);
+                //printf("Inserted File Thread %d\n", args->id);
             }
             else if(isDir(comboString)==1)
             {  
@@ -85,7 +85,7 @@ void* fileThreadFunction(void *A)
     //sleep(1);
     struct targs* args = A;
  
-    puts("Entering File Thread");
+    //puts("Entering File Thread");
     char* filename =  queue_dequeue_file(args->fileQueue, args->directoryQueue);
     //char* filename;
     while(filename)
@@ -217,7 +217,7 @@ int main(int argc, char* argv[])
         pthread_create(&tids[i], NULL, directThreadFunction, &args[i]);
     }
 
-    puts("Finished Directory Threads");
+    //puts("Finished Directory Threads");
     for(; i <collection_thread_count; i++)
     {
         args[i].directoryQueue = &directoryQueue;
