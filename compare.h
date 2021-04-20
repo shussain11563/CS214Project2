@@ -1,7 +1,7 @@
 struct targs {
 	Queue* directoryQueue;
     Queue* fileQueue;
-    wfdRepoNode* repo;
+    wfdRepo* repo;
     char* suffix;
     int id;
 };

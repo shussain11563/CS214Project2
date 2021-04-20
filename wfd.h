@@ -25,15 +25,101 @@ struct node{
     struct node* next;
 };
 
+
 typedef struct wfdRepoNode
 {
     struct wfd* data;
-    struct wfdRepo* next;
+    struct wfdRepoNode* next;
 } 
 wfdRepoNode;
 
+typedef struct wfdRepo
+{
+    //head of linked list
+    struct wfdRepoNode* head;
+    pthread_mutex_t lock;
+    pthread_cond_t read_ready;
+    int count;
+
+}wfdRepo;
+
+void wfd_repo_init(wfdRepo* repo)
+{
+    repo->head = NULL;
+    pthread_mutex_init(&repo->lock, NULL);
+    pthread_cond_init(&repo->read_ready, NULL);
+    repo->count;
+    
+}
+
+void wfd_repo_insert(wfdRepo* repo, struct wfd* data)
+{
+    pthread_mutex_lock(&repo->lock);
+    //puts("Inserting in repo insert wfd");
+    wfdRepoNode* node = malloc(sizeof(wfdRepoNode));
+    node->data = data;
+    node->next = NULL;
+    if(repo->head==NULL)
+    {
+        repo->head=node;
+        pthread_mutex_unlock(&repo->lock);
+        return;
+        //return node;
+    }
+
+    wfdRepoNode* prev = NULL;
+    wfdRepoNode* ptr = repo->head;
+    while(ptr!=NULL)
+    {
+        prev = ptr;
+        ptr = ptr->next;
+    }
+    prev->next =  node;
+    pthread_mutex_unlock(&repo->lock);
+    return;
+}
+
+void free_wfd(struct node* head)
+{
+
+    struct node* ptr = head;
+    struct node* prev = NULL;
+    while(ptr!=NULL)
+    {
+		prev=ptr;
+		ptr=ptr->next;
+        puts(prev->word);
+        free(prev->word);
+		free(prev);
+	}
+}
+
+void free_wfd_repo(wfdRepo* repo)
+{
+    wfdRepoNode* ptr = repo->head;
+    wfdRepoNode* prev = NULL;
+    while(ptr!=NULL)
+    {
+        prev = ptr;
+        ptr = ptr->next;
+        free_wfd(prev->data);
+        free(prev);
+    }
+}///////////////////////
+
+
+/*  
+typedef struct wfdRepo
+{
+    //struct wfd* data;
+    //struct wfdRepo* next;
+} 
+wfdRepo;
+
 wfdRepoNode* wfd_repo_insert(wfdRepoNode* repo, struct wfd* data)
 {
+    pthread_mutex_lock(&repo->lock);
+    puts("Inserting in repo insert wfd");
     wfdRepoNode* node = malloc(sizeof(wfdRepoNode));
     node->data = data;
     node->next = NULL;
@@ -50,10 +136,14 @@ wfdRepoNode* wfd_repo_insert(wfdRepoNode* repo, struct wfd* data)
         ptr = ptr->next;
     }
     prev->next =  node;
+    pthread_mutex_unlock(&repo->lock);
     return repo;
 }
+*/
+struct node* insert(struct node* front,  char* word, int count)
+{
 
-struct node* insert(struct node* front,  char* word, int count){
+    puts("Inserting in struct insert wfd");
     struct node* n;
     n=(struct node*)malloc(sizeof(struct node));
     if(!n){
@@ -282,7 +372,7 @@ double jsd(struct node* list1, struct node* list2){
     return jsd;
 }
 
-
+/*
 void free_wfd(struct node* head)
 {
     struct node* ptr = head;
@@ -309,3 +399,5 @@ void free_wfd_repo(wfdRepoNode* head)
         free(prev);
     }
 }
+
+*/

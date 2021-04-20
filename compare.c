@@ -90,6 +90,7 @@ void* fileThreadFunction(void *A)
     //char* filename;
     while(filename)
     {
+        
         //puts("Waiting to Dequeue in File Thread");
         
         /*
@@ -101,23 +102,39 @@ void* fileThreadFunction(void *A)
         //struct node* test=NULL;
         //puts("Successful in Dequeue in File Thread");
         //char* filename = queue_dequeue(args->fileQueue);
-
-
-
-        puts(filename);
-        free(filename);
         
+
+
         //puts(filename);
-        //puts("F3");  
-        //char* temp[strlen(filename)+1];
-        //strcpy(temp, filename);
-        //test = wfd(temp);
+        //free(filename);
+        
+
+        char temp[strlen(filename)+1];
+        strcpy(temp, filename);
+        puts("Hello");
+
+        int file = open(temp, O_RDONLY);
+        struct node* test = wfd(file);
+
+        close(file);
+
+        wfd_repo_insert(args->repo, test);
+
+
+        
+
+
+        
+        puts("Goodbye");
+        
         //args->repo = wfd_repo_insert(args->repo, test);
         //add to wfd repository
         //puts(filename);
         //add to wfd repo
         //free(filename);
         //puts("Deqeuing");
+        puts(filename);
+        free(filename);
         filename =  queue_dequeue_file(args->fileQueue, args->directoryQueue);
     }
     //puts("Ending File Thread");
@@ -134,10 +151,12 @@ int main(int argc, char* argv[])
     char* suffix = NULL;
     Queue directoryQueue;
     Queue fileQueue;
+    wfdRepo repo;
+   
 
     queue_init(&directoryQueue);
     queue_init(&fileQueue);
-    wfdRepoNode* repo = NULL;
+    wfd_repo_init(&repo);
 
 
 
@@ -213,7 +232,7 @@ int main(int argc, char* argv[])
         args[i].fileQueue = &fileQueue;
         args[i].suffix = suffix;
         args[i].id =  i;
-        args[i].repo = repo;
+        args[i].repo = &repo;
         pthread_create(&tids[i], NULL, directThreadFunction, &args[i]);
     }
 
@@ -224,7 +243,7 @@ int main(int argc, char* argv[])
         args[i].fileQueue = &fileQueue;
         args[i].suffix = suffix;
         args[i].id =  i;
-        args[i].repo = repo;
+        args[i].repo = &repo;
         pthread_create(&tids[i], NULL, fileThreadFunction,&args[i]);
     }
     
@@ -235,18 +254,20 @@ int main(int argc, char* argv[])
 	}
 
 
+    
     //sleep(5);
     
     queue_close(&directoryQueue);
 	queue_close(&fileQueue);
 	printf("[ ] Queue closed\n");
 
-
+    //struct node* test=NULL;
+    //test = wfd("poo.txt");
 
 
 
     free(args); //remove
-    free_wfd_repo(repo);
+    free_wfd_repo(&repo);
     puts(suffix);
     free(tids);
     //free(args);
