@@ -64,7 +64,7 @@ void wfd_repo_init(wfdRepo* repo)
 void wfd_repo_insert(wfdRepo* repo, struct wfd* data)
 {
     pthread_mutex_lock(&repo->lock);
-    puts("Inserting in repo insert wfd");
+    //puts("Inserting in repo insert wfd");
     wfdRepoNode* node = malloc(sizeof(wfdRepoNode));
     node->data = data;
     node->next = NULL;
@@ -102,7 +102,7 @@ void free_wfd(struct node* head)
     {
 		prev=ptr;
 		ptr=ptr->next;
-        puts(prev->word);
+        //puts(prev->word);
         free(prev->word);
         free(prev->fileName);
 		free(prev);
@@ -371,33 +371,3 @@ double jsd(struct node* list1, struct node* list2){
     return jsd;
 }
 
-
-/*
-void free_wfd(struct node* head)
-{
-    struct node* ptr = head;
-    struct node* prev = NULL;
-    while(ptr!=NULL)
-    {
-		prev=ptr;
-		ptr=ptr->next;
-        puts(prev->word);
-        free(prev->word);
-		free(prev);
-	}
-}
-
-void free_wfd_repo(wfdRepoNode* head)
-{
-    wfdRepoNode* prev = NULL;
-    wfdRepoNode* ptr = head;
-    while(ptr!=NULL)
-    {
-        prev = ptr;
-        ptr = ptr->next;
-        free_wfd(prev->data);
-        free(prev);
-    }
-}
-
-*/

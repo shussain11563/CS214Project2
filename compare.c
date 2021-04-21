@@ -14,11 +14,7 @@
 #include "wfd.h"
 #include "compare.h"
 
-void result_insert(struct comp_result* results, struct comp_result data, int* count)
-{
-
-    return;
-}
+int counterforanalysis = 0;
 
 void* analysis(void *A)
 {
@@ -29,50 +25,47 @@ void* analysis(void *A)
     {
         for(int j = i+1; j < a_args->wfdArray_size; j++)
         {
+            printf("Pairs (%d,%d)\n", i,j);
             struct node* ptr1 = a_args->wfdArray[i];
             struct node* ptr2 = a_args->wfdArray[j];
 
+            //printf("The filename pair is %s %s \n", ptr1->fileName, ptr2->fileName);
 
             struct comp_result* temp = malloc(sizeof(struct comp_result));
             
             temp->file1 = malloc(strlen(ptr1->fileName)+1);
             temp->file2 = malloc(strlen(ptr2->fileName)+1);
+            //temp->file2 = malloc(strlen("word2")+1);
+
 
             char word1[strlen(ptr1->fileName)+1];
-            char word2[strlen(ptr1->fileName)+1];
+            char word2[strlen(ptr2->fileName)+1];
             strcpy(word1, ptr1->fileName);
             strcpy(word2, ptr2->fileName);
 
-            
             strcpy(temp->file1, word1);
             strcpy(temp->file2, word2);
+
+            
+            //strcpy(temp->file1, "word1");
+            //strcpy(temp->file2, "word2");
 
             temp->tokens = ptr1->numOfWords + ptr2->numOfWords;
             temp->distance = jsd(ptr1, ptr2);
             
 
             pthread_mutex_lock(a_args->lock);
-            a_args->results[*a_args->occupied] = temp;
-            *a_args->occupied = (*a_args->occupied)++;
+            //printf("Inserted into positon %d \n", a_args->occupied);
+            printf("Inserted into positon %d \n", counterforanalysis);
+            a_args->results[counterforanalysis] = temp;
+            counterforanalysis++;
+            //int i = *a_args->occupied;
+            //*a_args->occupied = i++;
+            //a_args->results[*a_args->occupied] = temp;
+            //int i = *a_args->occupied;
+            //*a_args->occupied = i++;
             pthread_mutex_unlock(a_args->lock);
-
-
-            printf("We are at count %d \n", *a_args->occupied);
-            //free(temp->file1);
-            //free(temp->file2);
-            //free(temp);
-            //insert into 
-            /*
-            pthread_mutex_lock(a_args->lock);
-            //result_insert(a_args->wfdArray_size,&temp,a_args->occupied);
-
-            printf("We are at count %d \n", *a_args->occupied);
-            a_args->results[*a_args->occupied] = temp;
-
-            *a_args->occupied = (*a_args->occupied)++;
-            *a_args->occupied = *a_args->occupied++;
-            pthread_mutex_unlock(a_args->lock);
-            */
+     
         }
     }
 /*
@@ -132,6 +125,7 @@ void* directThreadFunction(void *A)
             {
                 continue;
             }
+            
             char* comboString = generateFilePath(filename, entry->d_name);
             char* temp[strlen(comboString)+1];
             strcpy(temp, comboString);
@@ -184,7 +178,7 @@ void* fileThreadFunction(void *A)
 
         wfd_repo_insert(args->repo, test);
 
-        puts(filename);
+        //puts(filename);
         free(filename);
         filename =  queue_dequeue_file(args->fileQueue, args->directoryQueue);
     }
@@ -325,12 +319,17 @@ int main(int argc, char* argv[])
     struct comp_result** results = malloc(sizeof(struct comp_result*) * ((repo.count*(repo.count-1))/2));
     int *occupied = malloc(sizeof(int));
     *occupied =0;
+    for(int i = 0; i <(repo.count*(repo.count-1))/2; i++)
+    {
+        results[i] = NULL;
+
+    } 
 
 
     wfdRepoNode* ptr = repo.head;
     int k = 0;
     //wfdRepoNode* prev = NULL;
-    puts("This is the filename");
+    //puts("This is the filename");
     while(ptr!=NULL)
     {
         arr[k]=ptr->data;
@@ -340,6 +339,8 @@ int main(int argc, char* argv[])
         ptr = ptr->next;
         k++;
     }
+
+
 
     //create array of structs
    
@@ -372,6 +373,7 @@ int main(int argc, char* argv[])
 		pthread_join(a_tids[j], NULL);
 	}
 
+
     for(int i = 0; i <(repo.count*(repo.count-1))/2; i++)
     {
         struct comp_result* temp =  results[i];
@@ -389,7 +391,7 @@ int main(int argc, char* argv[])
     free(args);
     free(arr); //remove
     free_wfd_repo(&repo);
-    puts(suffix);
+    //puts(suffix);
     free(tids);
     free(a_tids);
     //free(args);
