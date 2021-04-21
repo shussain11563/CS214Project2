@@ -33,7 +33,7 @@ void queue_insert(Queue* queue, char* string)
         queue->head = node;
         queue->rear = node;
         queue->count++;
-        //printf("hello insert %d\n",queue->count);
+
         pthread_mutex_unlock(&queue->lock);
         pthread_cond_signal(&queue->read_ready);
         
@@ -43,7 +43,6 @@ void queue_insert(Queue* queue, char* string)
     queue->rear->next = node;
     queue->rear = node; 
     queue->count++;
-    //printf("hello insert %d\n",queue->count);
     pthread_cond_broadcast(&queue->read_ready);
     pthread_mutex_unlock(&queue->lock);
     return;
@@ -55,16 +54,12 @@ char* queue_dequeue_dir(Queue* dirQueue, Queue* fileQueue)
 {
     pthread_mutex_lock(&dirQueue->lock);
     //handles if empty
-    //printf("Queue %d\n",dirQueue->count);
-    //printf("No active threads left %d \n", dirQueue->activeThread);
 
-    //printf("No size left %d \n", dirQueue->count);
     if(dirQueue->count==0) // if queue->head is null and queue is opne, wait
     {
         dirQueue->activeThread--;
         if(dirQueue->activeThread==0)
         {
-            //pthread_cond_broadcast(&dirQueue->read_ready);
             pthread_mutex_unlock(&dirQueue->lock);
             pthread_cond_broadcast(&dirQueue->read_ready); 
             pthread_cond_broadcast(&fileQueue->read_ready); 
@@ -83,16 +78,12 @@ char* queue_dequeue_dir(Queue* dirQueue, Queue* fileQueue)
 
     }
 
-    //grabs the first head
-    //puts("This message should only occur once");
+
     strbuf_t_node* retHead = dirQueue->head;
 
     strbuf_t temp = retHead->node;
-    //retHead->rear = NULL; //remove this?
     dirQueue->head = dirQueue->head->next;
-    //printf("No size left %d \n", dirQueue->count);
     dirQueue->count--;
-    //printf("No size left %d \n", dirQueue->count);
 
     if(dirQueue->head==NULL)
     {
@@ -108,12 +99,9 @@ char* queue_dequeue_dir(Queue* dirQueue, Queue* fileQueue)
 char* queue_dequeue_file(Queue* fileQueue, Queue* dirQueue)
 {
     pthread_mutex_lock(&fileQueue->lock);
-    //handles if empty
-    //puts("We are inside dequeue");
+
     if(fileQueue->count==0)
     {
-       // puts("No files left");
-        //printf("No active threads left %d \n", dirQueue->activeThread);
         if(dirQueue->activeThread == 0)
         {
             pthread_mutex_unlock(&fileQueue->lock);
@@ -134,7 +122,6 @@ char* queue_dequeue_file(Queue* fileQueue, Queue* dirQueue)
     
     strbuf_t_node* retHead = fileQueue->head;
     strbuf_t temp = retHead->node;
-    //retHead->rear = NULL; //remove this?
     fileQueue->head = fileQueue->head->next;
     fileQueue->count--;
 

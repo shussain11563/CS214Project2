@@ -124,7 +124,7 @@ int threadCount(char* argument, char* flag)
         i++;
     }
 
-    //parse integer   ----> use memcpy or memmove to condense code
+    //parse integer  e
     i = strlen(flag);
     strbuf_t grabInteger;
     sb_init(&grabInteger, 10);
@@ -148,7 +148,7 @@ char* stringParser(char* argument, char* flag)
         //return threadCount;  //defaultNumber ??
     }
 
-    //parse string   ----> use memcpy or memmove to condense code
+    //parse string 
     int i = strlen(flag);
     strbuf_t suffix;
     sb_init(&suffix, 10);

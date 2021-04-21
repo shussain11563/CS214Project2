@@ -32,9 +32,6 @@ struct comp_result {
     double distance;     // JSD between file 1 and file 2
 };
 
-
-
-/////////////////////
 typedef struct wfdRepoNode
 {
     struct wfd* data;
@@ -64,7 +61,6 @@ void wfd_repo_init(wfdRepo* repo)
 void wfd_repo_insert(wfdRepo* repo, struct wfd* data)
 {
     pthread_mutex_lock(&repo->lock);
-    //puts("Inserting in repo insert wfd");
     wfdRepoNode* node = malloc(sizeof(wfdRepoNode));
     node->data = data;
     node->next = NULL;
@@ -74,7 +70,7 @@ void wfd_repo_insert(wfdRepo* repo, struct wfd* data)
         repo->head=node;
         pthread_mutex_unlock(&repo->lock);
         return;
-        //return node;
+
     }
 
     wfdRepoNode* prev = NULL;
@@ -90,9 +86,6 @@ void wfd_repo_insert(wfdRepo* repo, struct wfd* data)
 }
 
 
-
-
-
 void free_wfd(struct node* head)
 {
 
@@ -102,7 +95,6 @@ void free_wfd(struct node* head)
     {
 		prev=ptr;
 		ptr=ptr->next;
-        //puts(prev->word);
         free(prev->word);
         free(prev->fileName);
 		free(prev);
@@ -121,12 +113,6 @@ void free_wfd_repo(wfdRepo* repo)
         free(prev);
     }
 }
-
-
-
-
-
-/////.///////////////
 
 struct node* insert(struct node* front,  char* word, int count, char* fileN){
     struct node* n;
@@ -205,8 +191,6 @@ void freeList(struct node* front){
 		free(temp);
 	}
 }
-
-/////
 
 struct node* wfd(int file, char* fileName)
 {

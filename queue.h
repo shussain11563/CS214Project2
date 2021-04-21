@@ -19,7 +19,6 @@ typedef struct Queue
 
 void queue_init(Queue* );
 void queue_insert(Queue* , char* );
-//char* queue_dequeue(Queue* );
 char* queue_dequeue_dir(Queue* dirQueue, Queue* fileQueue);
 char* queue_dequeue_file(Queue* fileQueue, Queue* dirQueue);
 void queue_destroy(Queue* );

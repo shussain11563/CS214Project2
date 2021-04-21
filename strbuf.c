@@ -128,9 +128,8 @@ int sb_insert(strbuf_t *sb, int index, char item){
             sb->data[index+1] = '\0';
             sb->used = index+1;
             return 0;
-        } // we know that index+1 is less than 2*sb->length
-        // so it will fit between used and length
-        // need to check if enough length to cover, if not double
+        } 
+
         else{
             if(index+1 >= sb->length){
                 size_t size = 2*sb->length;
@@ -154,18 +153,3 @@ int sb_insert(strbuf_t *sb, int index, char item){
         }
     }
 }
-
-/*
-void dump(strbuf_t *sb){
-    int i=0;
-    printf("[%ld/%ld]\t", sb->used, sb->length);
-    for(; i<sb->used; i++){
-        printf("%c ", sb->data[i]);
-    }
-    printf("/0 "); ++i;
-    for(; i<sb->length; i++){
-        printf("_ ");
-    }
-    putchar('\n');
-}
-*/
