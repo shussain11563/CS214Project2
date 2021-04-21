@@ -16,6 +16,19 @@
 
 int counterforanalysis = 0;
 
+// elsewhere: int sort_comps(void *r1, void *r2);
+double sort_comps(void *p, void *q)
+{
+    // qsort(results, (repo.count*(repo.count-1))/2, sizeof(struct comp_result*), sort_comps);
+
+    //struct comp_result* l= (((struct comp_result* )p));
+    struct comp_result* l= *(struct comp_result **)p;
+    struct comp_result* r= *(struct comp_result **)q;
+    //struct comp_result* r= (((struct comp_result *)q)); 
+    return (r->tokens - l->tokens);
+    //(//struct s)*r1 > r2->tokens
+}
+
 void* analysis(void *A)
 {
     struct analysis_args* a_args = A;
@@ -373,11 +386,14 @@ int main(int argc, char* argv[])
 		pthread_join(a_tids[j], NULL);
 	}
 
+    qsort(results, (repo.count*(repo.count-1))/2, sizeof(struct comp_result**), sort_comps);
+        
+
 
     for(int i = 0; i <(repo.count*(repo.count-1))/2; i++)
     {
         struct comp_result* temp =  results[i];
-        printf("%s %s %d %f \n", temp->file1, temp->file2, temp->tokens, temp->distance);
+        printf("%f %s %s\n", temp->distance, temp->file1, temp->file2);
         free(temp->file1);
         free(temp->file2);
         free(temp);
