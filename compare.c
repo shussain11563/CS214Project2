@@ -38,7 +38,7 @@ void* analysis(void *A)
     {
         for(int j = i+1; j < a_args->wfdArray_size; j++)
         {
-            printf("Pairs (%d,%d)\n", i,j);
+            //printf("Pairs (%d,%d)\n", i,j);
             struct node* ptr1 = a_args->wfdArray[i];
             struct node* ptr2 = a_args->wfdArray[j];
 
@@ -69,7 +69,7 @@ void* analysis(void *A)
 
             pthread_mutex_lock(a_args->lock);
             //printf("Inserted into positon %d \n", a_args->occupied);
-            printf("Inserted into positon %d \n", counterforanalysis);
+            //printf("Inserted into positon %d \n", counterforanalysis);
             a_args->results[counterforanalysis] = temp;
             counterforanalysis++;
             //int i = *a_args->occupied;
