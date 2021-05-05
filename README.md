@@ -1,2 +1,3 @@
-# CS214Project2
-Systems Programming Project 2
+# CS214Project
+
+This project is our multi-threaded project for CS214.
